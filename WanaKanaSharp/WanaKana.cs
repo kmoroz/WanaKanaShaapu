@@ -94,7 +94,7 @@ namespace WanaKanaSharp
             return true;
         }
 
-/*        public static bool IsMixed(string input, [Optional]DefaultOptions Options)
+        public static bool IsMixed(string input, [Optional] DefaultOptions options)
         {
             bool containsRomaji = false;
             bool containsKana = false;
@@ -102,8 +102,14 @@ namespace WanaKanaSharp
             {
                 if (IsKana(c.ToString()))
                     containsKana = true;
-                else if ()
+                else if (IsRomaji(c.ToString()))
+                    containsRomaji = true;
+                else if (options != null && !options.PassKanji && IsKanji(c.ToString()))
+                    return false;
+                if (containsRomaji && containsKana)
+                    return true;
             }
-        }*/
+            return false;
+        }
     }
 }
