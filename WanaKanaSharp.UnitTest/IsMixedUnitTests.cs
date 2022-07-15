@@ -27,9 +27,25 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("お腹A", false)]
-        public void IsMixed_WhenPassedKanjiSetToFalse_ReturnsCorrectResult(string input, bool passKanji)
+        public void IsMixed_WhenPassKanjiSetToFalse_ReturnsFalse(string input, bool passKanji)
         {
             var result = WanaKana.IsMixed(input, new DefaultOptions { PassKanji = passKanji });
+
+            Assert.IsFalse(result);
+        }
+
+        [TestCase("ab")]
+        public void IsMixed_WhenPassedRomaji_ReturnsFalse(string input)
+        {
+            var result = WanaKana.IsMixed(input);
+
+            Assert.IsFalse(result);
+        }
+
+        [TestCase("あア")]
+        public void IsMixed_WhenPassedKana_ReturnsFalse(string input)
+        {
+            var result = WanaKana.IsMixed(input);
 
             Assert.IsFalse(result);
         }
