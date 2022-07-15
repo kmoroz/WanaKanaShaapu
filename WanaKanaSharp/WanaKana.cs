@@ -111,5 +111,30 @@ namespace WanaKanaSharp
             }
             return false;
         }
+
+        public static string StripOkurigana(string input, [Optional] bool leading, [Optional]  string matchKanji)
+         {
+            string okuriganaString = input;
+            if (matchKanji != null)
+                okuriganaString = matchKanji;
+            while (IsHiragana(okuriganaString.Last().ToString()))
+            {
+                okuriganaString = okuriganaString.Remove(okuriganaString.Length - 1);
+            }
+            if (leading)
+            {
+                while(IsHiragana(okuriganaString.First().ToString()))
+                {
+                    okuriganaString = okuriganaString.Remove(0, 1);
+                }
+            }
+            if (matchKanji != null)
+            {
+                if (leading)
+                    return input.Substring(1, okuriganaString.Length);
+                return input.Remove(okuriganaString.Length);
+            }
+                return okuriganaString;
+        }
     }
 }
