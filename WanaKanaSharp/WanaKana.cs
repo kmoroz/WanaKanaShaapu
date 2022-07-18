@@ -136,5 +136,31 @@ namespace WanaKanaSharp
             }
                 return okuriganaString;
         }
+
+        public static string ToHiragana(string input, [Optional] DefaultOptions options)
+        {
+            string result = "";
+            string syllable = "";
+            foreach (char c in input)
+            {
+                if (IsKatakana(c.ToString()))
+                    result += (char)(c - 0x60);
+                else if (IsRomaji(c.ToString()) || Char.IsLetter(c))
+                {
+                    syllable += c;
+                    foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
+                    {
+                        if (item.Value == syllable)
+                        {
+                            result += item.Key;
+                            syllable = "";
+                        }
+                    }
+                }
+                else
+                    result += c;
+            }
+            return result;
+        }
     }
 }
