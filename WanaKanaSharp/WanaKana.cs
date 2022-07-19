@@ -145,15 +145,38 @@ namespace WanaKanaSharp
             {
                 if (IsKatakana(c.ToString()))
                     result += (char)(c - 0x60);
-                else if (IsRomaji(c.ToString()) || Char.IsLetter(c))
+                else if (IsRomaji(c.ToString()))
                 {
                     syllable += c;
-                    foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
+                    if (options != null && options.PassRomaji)
+                        result += c;
+/*                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsValue(syllable)
                     {
-                        if (item.Value == syllable)
+                        
+                    }*/
+                    else if (Char.IsLetter(c))
+                    {
+                        foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
                         {
-                            result += item.Key;
-                            syllable = "";
+                            if (item.Value == syllable)
+                            {
+                                if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
+                                    result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
+                                else
+                                    result += item.Key;
+                                syllable = "";
+                            }
+                        }
+                    }
+                    else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
+                    {
+                        foreach (var item in HiraganaRomaji.WhitespacePunctuationDictionary)
+                        {
+                            if (item.Value == syllable)
+                            {
+                                result += item.Key;
+                                syllable = "";
+                            }
                         }
                     }
                 }
