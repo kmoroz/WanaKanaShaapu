@@ -150,10 +150,6 @@ namespace WanaKanaSharp
                     syllable += c;
                     if (options != null && options.PassRomaji)
                         result += c;
-/*                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsValue(syllable)
-                    {
-                        
-                    }*/
                     else if (Char.IsLetter(c))
                     {
                         foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
@@ -162,6 +158,50 @@ namespace WanaKanaSharp
                             {
                                 if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
                                     result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
+                                else
+                                    result += item.Key;
+                                syllable = "";
+                            }
+                        }
+                    }
+                    else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
+                    {
+                        foreach (var item in HiraganaRomaji.WhitespacePunctuationDictionary)
+                        {
+                            if (item.Value == syllable)
+                            {
+                                result += item.Key;
+                                syllable = "";
+                            }
+                        }
+                    }
+                }
+                else
+                    result += c;
+            }
+            return result;
+        }
+        public static string ToKatakana(string input, [Optional] DefaultOptions options)
+        {
+            string result = "";
+            string syllable = "";
+            foreach (char c in input)
+            {
+                if (IsHiragana(c.ToString()))
+                    result += (char)(c + 0x60);
+                else if (IsRomaji(c.ToString()))
+                {
+                    syllable += c;
+                    if (options != null && options.PassRomaji)
+                        result += c;
+                    else if (Char.IsLetter(c))
+                    {
+                        foreach (var item in HiraganaRomaji.KatakanaRomajiDictionary)
+                        {
+                            if (item.Value == syllable)
+                            {
+                                if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable))
+                                    result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable];
                                 else
                                     result += item.Key;
                                 syllable = "";
