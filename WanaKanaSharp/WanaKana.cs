@@ -154,7 +154,7 @@ namespace WanaKanaSharp
                     {
                         foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
                         {
-                            if (item.Value == syllable)
+                            if (item.Value == syllable.ToLower())
                             {
                                 if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
                                     result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
@@ -198,13 +198,14 @@ namespace WanaKanaSharp
                     {
                         foreach (var item in HiraganaRomaji.KatakanaRomajiDictionary)
                         {
-                            if (item.Value == syllable)
+                            if (item.Value == syllable.ToLower())
                             {
                                 if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable))
                                     result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable];
                                 else
                                     result += item.Key;
                                 syllable = "";
+                                break;
                             }
                         }
                     }
@@ -225,5 +226,109 @@ namespace WanaKanaSharp
             }
             return result;
         }
+
+
+        public static string characterType(char c)
+        {
+            string letter = c.ToString();
+            if (IsKanji(letter))
+                return "kanji";
+            else if (IsHiragana(letter))
+                return "hiragana";
+            else if (IsKatakana(letter))
+                return "katakana";
+            else if (Char.IsWhiteSpace(c))
+                return "whitespace";
+            else if (Char.IsLetter(c))
+                return "en";
+            else if (Char.IsDigit(c))
+                return "english numeral";
+            else if (Char.IsPunctuation(c))
+                return "english punctuation";
+            else if (c >= Constants.PunctuationMin && c <= Constants.PunctuationMax)
+                return "japanese punctuation";
+            else if (IsRomaji(letter))
+                return "ja";
+            else
+                return "other";
+        }
+
+        public static string ConvertToKana(string token)
+        {
+            if (token.Length == 0)
+                return string.Empty;
+            if (char.IsLower(token.Last()))
+                return ToHiragana(token);
+            else
+                return ToKatakana(token);
+        }
+
+        public static string ToKana(string input, [Optional] DefaultOptions options)
+        {
+            string result = string.Empty;
+            string toBeConverted = string.Empty;
+            bool isCurrentCharLowercase;
+            bool isPreviousCharLowercase;
+            foreach (char c in input)
+            {
+                if (IsKana(c.ToString()) || IsKanji(c.ToString()))
+                {
+                    result += ConvertToKana(toBeConverted) + c;
+                    toBeConverted = string.Empty;
+                }
+                else if (char.IsPunctuation(c))
+                {
+                    result += ConvertToKana(toBeConverted) + HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    toBeConverted = string.Empty;
+                }
+                else
+                {
+                    if (toBeConverted.Length == 0)
+                        toBeConverted += c;
+                    else
+                    {
+                        isCurrentCharLowercase = char.IsLower(c);
+                        isPreviousCharLowercase = char.IsLower(toBeConverted.Last());
+                        if (isCurrentCharLowercase == isPreviousCharLowercase)
+                            toBeConverted += c;
+                        else
+                        {
+                            if (isPreviousCharLowercase)
+                                result += ToHiragana(toBeConverted);
+                            else
+                                result += ToKatakana(toBeConverted);
+                            toBeConverted = string.Empty;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
+           /* bool currentType;
+            bool previousType = char.IsLower(input.First());
+            string toBeConverted = "";
+            string result = "";
+            foreach (char c in input)
+            {
+                currentType = char.IsLower(c);
+                if (IsKana(c.ToString()))
+                {
+                    toBeConverted += c;
+                    break;
+                }
+                if (currentType == previousType)
+                    toBeConverted += c;
+                else
+                {
+                    if (!currentType)
+                        result += ToHiragana(toBeConverted);
+                    else
+                        result += ToKatakana(toBeConverted);
+                    toBeConverted = "";
+                    toBeConverted += c;
+                }
+                previousType = currentType;
+            }
+            return result;*/
