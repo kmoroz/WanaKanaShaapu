@@ -23,5 +23,6 @@
         public static char MacronOMax = '\u014D';
         public static char MacronUMin = '\u016A';
         public static char MacronUMax = '\u016B';
+        public static string EnglishVowels = "aeiouAEIOU";
     }
 }
