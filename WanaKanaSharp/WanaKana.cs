@@ -163,23 +163,20 @@ namespace WanaKanaSharp
                         result += c;
                     else if (Char.IsLetter(c))
                     {
-                        if (syllable == "n" && Constants.EnglishVowels.Contains(input[i + 1]))
+                        if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
                             continue;
                         if (IsSokuon(syllable))
                         {
                             result += 'っ';
                             syllable = syllable.Remove(syllable.Length - 1);
                         }
-                        foreach (var item in HiraganaRomaji.HiraganaRomajiDictionary)
+                        if (HiraganaRomaji.HiraganaRomajiDictionary.ContainsKey(syllable.ToLower()))
                         {
-                            if (item.Value == syllable.ToLower())
-                            {
-                                if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
-                                    result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
-                                else
-                                    result += item.Key;
-                                syllable = String.Empty;
-                            }
+                            if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
+                                result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable.ToLower()];
+                            else
+                                result += HiraganaRomaji.HiraganaRomajiDictionary[syllable.ToLower()];
+                            syllable = String.Empty;
                         }
                     }
                     else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
@@ -214,18 +211,14 @@ namespace WanaKanaSharp
                             result += 'ッ';
                             syllable = syllable.Remove(syllable.Length - 1);
                         }
-                        foreach (var item in HiraganaRomaji.KatakanaRomajiDictionary)
+                        if (HiraganaRomaji.KatakanaRomajiDictionary.ContainsKey(syllable.ToLower()))
                         {
-                            if (item.Value == syllable.ToLower())
-                            {
-                                if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable))
-                                    result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable];
-                                else
-                                    result += item.Key;
-                                syllable = "";
-                                break;
-                            }
-                        }
+                            if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable.ToLower()))
+                                result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable.ToLower()];
+                            else
+                                result += HiraganaRomaji.KatakanaRomajiDictionary[syllable.ToLower()];
+                            syllable = String.Empty;
+                        }      
                     }
                     else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
                         result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
@@ -312,8 +305,8 @@ namespace WanaKanaSharp
         }
     }
 
-    public static Array[] Tokenize(string input, [Optional] bool compact, [Optional] bool detailed)
+/*    public static Array[] Tokenize(string input, [Optional] bool compact, [Optional] bool detailed)
     {
 
-    }
+    }*/
 }
