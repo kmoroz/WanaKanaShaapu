@@ -278,7 +278,7 @@ namespace WanaKanaSharp
                     result += ConvertToKana(toBeConverted) + c;
                     toBeConverted = string.Empty;
                 }
-                else if (char.IsPunctuation(c))
+                else if (char.IsPunctuation(c) || HiraganaRomaji.WhitespacePunctuationDictionary.ContainsKey(c.ToString()))
                 {
                     result += ConvertToKana(toBeConverted) + HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
                     toBeConverted = string.Empty;
