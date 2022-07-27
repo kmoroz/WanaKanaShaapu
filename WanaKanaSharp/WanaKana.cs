@@ -94,7 +94,7 @@ namespace WanaKanaSharp
             return true;
         }
 
-        public static bool IsMixed(string input, [Optional] DefaultOptions options)
+        public static bool IsMixed(string input, [Optional] bool? passKanji)
         {
             bool containsRomaji = false;
             bool containsKana = false;
@@ -104,7 +104,7 @@ namespace WanaKanaSharp
                     containsKana = true;
                 else if (IsRomaji(c.ToString()))
                     containsRomaji = true;
-                else if (options != null && !options.PassKanji && IsKanji(c.ToString()))
+                else if (passKanji.HasValue && !passKanji.Value && IsKanji(c.ToString()))
                     return false;
                 if (containsRomaji && containsKana)
                     return true;
@@ -156,7 +156,7 @@ namespace WanaKanaSharp
                 char c = input[i];
                 if (IsKatakana(c.ToString()))
                     result += (char)(c - 0x60);
-                else if (IsRomaji(c.ToString()))
+                else if (IsRomaji(c.ToString()) || IsRomaji(c.ToString()) && options != null && !options.PassRomaji)
                 {
                     syllable += c;
                     if (options != null && options.PassRomaji)
@@ -255,14 +255,14 @@ namespace WanaKanaSharp
                 return "other";
         }
 
-        public static string ConvertToKana(string token)
+        public static string ConvertToKana(string token, [Optional] DefaultOptions options)
         {
             if (token.Length == 0)
-                return string.Empty;
+                return String.Empty;
             if (char.IsLower(token.Last()))
-                return ToHiragana(token);
+                return ToHiragana(token, options);
             else
-                return ToKatakana(token);
+                return ToKatakana(token, options);
         }
 
         public static string ToKana(string input, [Optional] DefaultOptions options)
@@ -275,12 +275,12 @@ namespace WanaKanaSharp
             {
                 if (IsKana(c.ToString()) || IsKanji(c.ToString()) || char.IsWhiteSpace(c))
                 {
-                    result += ConvertToKana(toBeConverted) + c;
+                    result += ConvertToKana(toBeConverted, options) + c;
                     toBeConverted = string.Empty;
                 }
                 else if (char.IsPunctuation(c) || HiraganaRomaji.WhitespacePunctuationDictionary.ContainsKey(c.ToString()))
                 {
-                    result += ConvertToKana(toBeConverted) + HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    result += ConvertToKana(toBeConverted, options) + HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
                     toBeConverted = string.Empty;
                 }
                 else
@@ -295,13 +295,13 @@ namespace WanaKanaSharp
                             toBeConverted += c;
                         else
                         {
-                            result += ConvertToKana(toBeConverted);
+                            result += ConvertToKana(toBeConverted, options);
                             toBeConverted = string.Empty;
                         }
                     }
                 }
             }
-            return result + ConvertToKana(toBeConverted);
+            return result + ConvertToKana(toBeConverted, options);
         }
     }
 
