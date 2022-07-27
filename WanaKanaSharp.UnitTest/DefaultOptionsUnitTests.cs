@@ -17,10 +17,12 @@ namespace WanaKanaSharp.UnitTests
 
             Assert.IsFalse(myOptions.UseObsoleteKana);
             Assert.IsFalse(myOptions.PassRomaji);
-            Assert.IsTrue(myOptions.PassKanji);
+            Assert.IsTrue(myOptions.ConvertLongVowelMark);
             Assert.IsFalse(myOptions.UpcaseKatakana);
             Assert.IsNull(myOptions.IMEMode);
             Assert.AreEqual(myOptions.Romanization,"hepburn");
+            Assert.NotNull(myOptions.CustomKanaMapping);
+            Assert.NotNull(myOptions.CustomRomajiMapping);
         }
     }
 }
