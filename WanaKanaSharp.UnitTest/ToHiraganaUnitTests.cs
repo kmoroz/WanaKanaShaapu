@@ -20,7 +20,7 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("only カナ", true, "only かな")]
-        public void ToHiragana_WhenPassRomajiFlagIsEngabled_OnlyConvertsKatakana(string input, bool passRomaji, string expectedOutput)
+        public void ToHiragana_WhenPassedRomajiFlagIsEngabled_OnlyConvertsKatakana(string input, bool passRomaji, string expectedOutput)
         {
             string result = WanaKana.ToHiragana(input, new DefaultOptions { PassRomaji = passRomaji });
 
@@ -28,9 +28,17 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("wi", true, "ゐ")]
-        public void ToHiragana_WhenPassUseObsoleteKanaFlag_ReturnsObsoleteKana(string input, bool useObsoleteKana, string expectedOutput)
+        public void ToHiragana_WhenPassedUseObsoleteKanaFlag_ReturnsObsoleteKana(string input, bool useObsoleteKana, string expectedOutput)
         {
             string result = WanaKana.ToHiragana(input, new DefaultOptions { UseObsoleteKana = useObsoleteKana });
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("only convert the katakana: ヒラガナ", true, "only convert the katakana: ひらがな")]
+        public void ToHiragana_WhenPassedPassRomajiSetToTrue_ReturnsRomajiUnconverted(string input, bool passRomaji, string expectedOutput)
+        {
+            string result = WanaKana.ToHiragana(input, new DefaultOptions { PassRomaji = passRomaji });
 
             Assert.AreEqual(result, expectedOutput);
         }
