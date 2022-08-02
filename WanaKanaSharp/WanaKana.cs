@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace WanaKanaSharp
 {
@@ -16,6 +17,7 @@ namespace WanaKanaSharp
             }
             return true;
         }
+
         public static bool IsKana(string input)
         {
             foreach (char c in input)
@@ -69,7 +71,8 @@ namespace WanaKanaSharp
             foreach (char c in input)
             {
                 if (Char.IsAscii(c) || Char.IsWhiteSpace(c)
-                    || Char.IsPunctuation(c) || IsMacron(c))
+                    || Char.IsPunctuation(c) || IsMacron(c) 
+                    || (c >= Constants.RomajiMin && c <= Constants.RomajiMax))
                     continue;
                 else
                     return false;
@@ -149,8 +152,8 @@ namespace WanaKanaSharp
 
         public static string ToHiragana(string input, [Optional] DefaultOptions options)
         {
-            string result = String.Empty;
-            string syllable = String.Empty;
+            string result = string.Empty;
+            string syllable = string.Empty;
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
@@ -176,7 +179,7 @@ namespace WanaKanaSharp
                                 result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable.ToLower()];
                             else
                                 result += HiraganaRomaji.HiraganaRomajiDictionary[syllable.ToLower()];
-                            syllable = String.Empty;
+                            syllable = string.Empty;
                         }
                     }
                     else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
@@ -190,8 +193,8 @@ namespace WanaKanaSharp
 
         public static string ToKatakana(string input, [Optional] DefaultOptions options)
         {
-            string result = String.Empty;
-            string syllable = String.Empty;
+            string result = string.Empty;
+            string syllable = string.Empty;
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
@@ -217,7 +220,7 @@ namespace WanaKanaSharp
                                 result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable.ToLower()];
                             else
                                 result += HiraganaRomaji.KatakanaRomajiDictionary[syllable.ToLower()];
-                            syllable = String.Empty;
+                            syllable = string.Empty;
                         }      
                     }
                     else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
@@ -229,26 +232,39 @@ namespace WanaKanaSharp
             return result;
         }
 
-
-        public static string characterType(char c)
+        public static string MapCharacterToTypeCompact(char c)
         {
             string letter = c.ToString();
+            if (IsJapanese(letter) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
+                return "ja";
+            else if (Char.IsAscii(c) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
+                return "en";
+            else
+                return "other";
+        }
+        public static string MapCharacterToType(char c, bool compact)
+        {
+            string letter = c.ToString();
+            if (compact)
+                return MapCharacterToTypeCompact(c);
             if (IsKanji(letter))
                 return "kanji";
             else if (IsHiragana(letter))
                 return "hiragana";
             else if (IsKatakana(letter))
                 return "katakana";
+            else if (IsJapanese(letter) && Char.IsPunctuation(c))
+                return "japanesePunctuation";
             else if (Char.IsWhiteSpace(c))
-                return "whitespace";
-            else if (Char.IsLetter(c))
+                return "space";
+            else if (Char.IsAscii(c) && Char.IsLetter(c))
                 return "en";
+            else if (Char.IsDigit(c) && Char.IsAscii(c))
+                return "englishNumeral";
             else if (Char.IsDigit(c))
-                return "english numeral";
+                return "japaneseNumeral";
             else if (Char.IsPunctuation(c))
-                return "english punctuation";
-            else if (c >= Constants.PunctuationMin && c <= Constants.PunctuationMax)
-                return "japanese punctuation";
+                return "englishPunctuation";
             else if (IsRomaji(letter))
                 return "ja";
             else
@@ -258,7 +274,7 @@ namespace WanaKanaSharp
         public static string ConvertToKana(string token, [Optional] DefaultOptions options)
         {
             if (token.Length == 0)
-                return String.Empty;
+                return string.Empty;
             if (char.IsLower(token.Last()))
                 return ToHiragana(token, options);
             else
@@ -303,10 +319,35 @@ namespace WanaKanaSharp
             }
             return result + ConvertToKana(toBeConverted, options);
         }
+
+        public static Tokenization Tokenize(string input, [Optional] bool compact)
+        {
+            string currentType = string.Empty;
+            string previousType = string.Empty;
+            string token = string.Empty;
+            Tokenization tokenization = new Tokenization();
+            foreach (char c in input)
+            {
+                currentType = MapCharacterToType(c, compact);
+                if (string.IsNullOrEmpty(previousType) || currentType == previousType)
+                    token += c;
+                else
+                {
+                    if (compact && Char.IsWhiteSpace(c) && (previousType == "en" || previousType == "ja"))
+                    {
+                        token += c;
+                        continue;
+                    }
+                    tokenization.Tokens.Add(new Token(previousType, token));
+                    token = string.Empty;
+                    token += c;
+                }
+                previousType = currentType;
+            }
+            tokenization.Tokens.Add(new Token(currentType, token));
+            return tokenization;
+        }
     }
-
-/*    public static Array[] Tokenize(string input, [Optional] bool compact, [Optional] bool detailed)
-    {
-
-    }*/
 }
+
+
