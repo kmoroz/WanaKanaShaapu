@@ -348,19 +348,21 @@ namespace WanaKanaSharp
             return tokenization;
         }
 
-        public static string ToRomaji(string kana, [Optional] DefaultOptions options)
+        public static string ToRomaji(string kana, [Optional] DefaultOptions options, [Optional] Dictionary<string, string> map)
         {
             string result = string.Empty;
             foreach (char c in kana)
             {
                 if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
-                    result += HiraganaRomaji.WhitespacePunctuationDictionary.FirstOrDefault(item => item.Value == c.ToString()).Key;
+                    result += HiraganaRomaji.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
+                else if (map != null && map.ContainsKey(c.ToString()))
+                    result += map[c.ToString()];
                 else if (IsHiragana(c.ToString()))
-                    result += HiraganaRomaji.HiraganaRomajiDictionary.FirstOrDefault(item => item.Value == c.ToString()).Key;
+                    result += HiraganaRomaji.HiraganaRomajiDictionary.First(item => item.Value == c.ToString()).Key;
                 else if (IsKatakana(c.ToString()) && options != null && options.UpcaseKatakana)
-                    result += HiraganaRomaji.KatakanaRomajiDictionary.FirstOrDefault(item => item.Value == c.ToString()).Key.ToUpper();
+                    result += HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == c.ToString()).Key.ToUpper();
                 else if (IsKatakana(c.ToString()))
-                    result += HiraganaRomaji.KatakanaRomajiDictionary.FirstOrDefault(item => item.Value == c.ToString()).Key;
+                    result += HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == c.ToString()).Key;
                 else
                     result += c;
             }
