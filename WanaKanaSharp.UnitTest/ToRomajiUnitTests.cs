@@ -11,7 +11,7 @@ namespace WanaKanaSharp.UnitTests
     public class ToRomajiUnitTests
     {
         [TestCase("ひらがな　カタカナ", "hiragana katakana")]
-        //[TestCase("げーむ　ゲーム", "geemu ge-mu")]
+        [TestCase("げーむ　ゲーム", "geemu ge-mu")]
         public void ToRomaji_WhenPassedKana_ReturnsItConvertedToLatinCharacters(string input, string expectedOutput)
         {
             string result = WanaKana.ToRomaji(input);
@@ -23,6 +23,15 @@ namespace WanaKanaSharp.UnitTests
         public void ToRomaji_WhenPassedUpcaseKatakanaTrue_ReturnsUppercaseLatinCharacters(string input, bool upcaseKatakana, string expectedOutput)
         {
             string result = WanaKana.ToRomaji(input, new DefaultOptions { UpcaseKatakana = upcaseKatakana });
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("つじぎり", "tuzigili")]
+        public void ToRomaji_WhenPassedACustomMap_ReturnsACorrectString(string input, string expectedOutput)
+        {
+            var map = new Dictionary<string, string> { { "じ", "zi" }, { "つ", "tu" }, { "り", "li" } };
+            string result = WanaKana.ToRomaji(input, map: map);
 
             Assert.AreEqual(result, expectedOutput);
         }
