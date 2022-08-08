@@ -372,7 +372,7 @@ namespace WanaKanaSharp
             return tokenization;
         }
 
-        public static string ToRomaji(string kana, [Optional] DefaultOptions options, [Optional] Dictionary<string, string> map)
+        public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
             for (int i = 0; i < kana.Length; i++)
@@ -382,8 +382,8 @@ namespace WanaKanaSharp
                     result += HandleChoonpuConversion(kana, i);
                 else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
                     result += HiraganaRomaji.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
-                else if (map != null && map.ContainsKey(c.ToString()))
-                    result += map[c.ToString()];
+                else if (options != null && options.CustomRomajiMapping != null && options.CustomRomajiMapping.ContainsKey(c.ToString()))
+                    result += options.CustomRomajiMapping[c.ToString()];
                 else if (IsHiragana(c.ToString()))
                     result += HiraganaRomaji.HiraganaRomajiDictionary.First(item => item.Value == c.ToString()).Key;
                 else if (IsKatakana(c.ToString()) && options != null && options.UpcaseKatakana)
@@ -397,5 +397,3 @@ namespace WanaKanaSharp
         }
     }
 }
-
-
