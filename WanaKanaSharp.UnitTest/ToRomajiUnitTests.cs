@@ -30,8 +30,8 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("つじぎり", "tuzigili")]
         public void ToRomaji_WhenPassedACustomMap_ReturnsACorrectString(string input, string expectedOutput)
         {
-            var map = new Dictionary<string, string> { { "じ", "zi" }, { "つ", "tu" }, { "り", "li" } };
-            string result = WanaKana.ToRomaji(input, map: map);
+            var map = new DefaultOptions { CustomRomajiMapping = new Dictionary<string, string>{ { "じ", "zi" }, { "つ", "tu" }, { "り", "li" } } };
+            string result = WanaKana.ToRomaji(input, map);
 
             Assert.AreEqual(result, expectedOutput);
         }
