@@ -15,9 +15,18 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("座禅‘zazen’スタイル", "座禅「ざぜん」スタイル")]
         [TestCase("batsuge-mu", "ばつげーむ")]
         [TestCase("!?.:/,~-‘’“”[](){}", "！？。：／、〜ー「」『』［］（）｛｝")]
+
         public void ToKana_WhenPassedLowerAndUpperCaseLatinChacters_ReturnsThemConvertedToHiraganaAndKatakanaRespectively(string input, string expectedOutput)
         {
             string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("we", true, "ゑ")]
+        public void ToKana_WhenPassedObsoleteKanaFlagTrue_ReturnsObsoleteKanaString(string input, bool useObsoleteKana, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input, new DefaultOptions { UseObsoleteKana = useObsoleteKana });
 
             Assert.AreEqual(result, expectedOutput);
         }
