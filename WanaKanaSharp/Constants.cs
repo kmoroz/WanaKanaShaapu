@@ -11,6 +11,8 @@
         public static char Choonpu = 'ー';
         public static char KanjiMin = '\u4e00';
         public static char KanjiMax = '\u9fa0';
+        public static char RomajiMin = '\uff20';
+        public static char RomajiMax = '\uff50';
         public static char JapanesePunctuationMin = '\u3000';
         public static char JapanesePunctuationMax = '\u303f';
         public static char ZenzakuMin = '\uff00';
