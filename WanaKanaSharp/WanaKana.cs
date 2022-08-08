@@ -150,6 +150,28 @@ namespace WanaKanaSharp
             return false;
         }
 
+        public static string HandleChoonpuConversion(string input, int i, [Optional] DefaultOptions options)
+        {
+            char charBeforeChoonpu = input[i - 1];
+            string syllable = string.Empty;
+            string latinVowel = string.Empty;
+            if (IsHiragana(charBeforeChoonpu.ToString()))
+            {
+                syllable = HiraganaRomaji.HiraganaRomajiDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
+                latinVowel = syllable.Last().ToString();
+                return latinVowel;
+            }
+            else
+            {
+                if (options != null && !options.ConvertLongVowelMark)
+                    return "ー";
+                syllable = HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
+                latinVowel = syllable.Last().ToString();
+                string convertedVowel = HiraganaRomaji.HiraganaRomajiDictionary[latinVowel];
+                return convertedVowel;
+            }
+        }
+
         public static string ToHiragana(string input, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
@@ -157,8 +179,10 @@ namespace WanaKanaSharp
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (IsKatakana(c.ToString()))
+                if (IsKatakana(c.ToString()) && c != Constants.Choonpu)
                     result += (char)(c - 0x60);
+                else if (c == Constants.Choonpu)
+                    result += HandleChoonpuConversion(input, i, options);
                 else if (IsRomaji(c.ToString()) || IsRomaji(c.ToString()) && options != null && !options.PassRomaji)
                 {
                     syllable += c;
@@ -351,9 +375,12 @@ namespace WanaKanaSharp
         public static string ToRomaji(string kana, [Optional] DefaultOptions options, [Optional] Dictionary<string, string> map)
         {
             string result = string.Empty;
-            foreach (char c in kana)
+            for (int i = 0; i < kana.Length; i++)
             {
-                if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
+                char c = kana[i];
+                if (c == Constants.Choonpu && IsHiragana(kana[i - 1].ToString()))
+                    result += HandleChoonpuConversion(kana, i);
+                else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
                     result += HiraganaRomaji.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
                 else if (map != null && map.ContainsKey(c.ToString()))
                     result += map[c.ToString()];
