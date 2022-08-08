@@ -29,7 +29,7 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("お腹A", false)]
         public void IsMixed_WhenPassKanjiSetToFalse_ReturnsFalse(string input, bool passKanji)
         {
-            var result = WanaKana.IsMixed(input, new DefaultOptions { PassKanji = passKanji });
+            var result = WanaKana.IsMixed(input, passKanji);
 
             Assert.IsFalse(result);
         }
