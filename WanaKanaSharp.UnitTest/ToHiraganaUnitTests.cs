@@ -12,6 +12,7 @@ namespace WanaKanaSharp.UnitTests
     {
         [TestCase("toukyou, オオサカ", "とうきょう、　おおさか")]
         [TestCase("wi", "うぃ")]
+        [TestCase("ラーメン", "らあめん")]
         public void ToHiragana_WhenPassedKatakanaAndRomaji_ReturnsThemConvertedToHiragana(string input, string expectedOutput)
         {
             string result = WanaKana.ToHiragana(input);
@@ -39,6 +40,14 @@ namespace WanaKanaSharp.UnitTests
         public void ToHiragana_WhenPassedPassRomajiSetToTrue_ReturnsRomajiUnconverted(string input, bool passRomaji, string expectedOutput)
         {
             string result = WanaKana.ToHiragana(input, new DefaultOptions { PassRomaji = passRomaji });
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("ラーメン", false, "らーめん")]
+        public void ToHiragana_WhenPassedConvertLongVowelMarkSetToFalse_ReturnsCorrectOutput(string input, bool convertLongVowelMark, string expectedOutput)
+        {
+            string result = WanaKana.ToHiragana(input, new DefaultOptions {  ConvertLongVowelMark = convertLongVowelMark });
 
             Assert.AreEqual(result, expectedOutput);
         }
