@@ -188,6 +188,11 @@ namespace WanaKanaSharp
                     syllable += c;
                     if (options != null && options.PassRomaji)
                         result += c;
+                    else if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
+                    {
+                        result += options.CustomKanaMapping[syllable];
+                        syllable = string.Empty;
+                    }
                     else if (Char.IsLetter(c))
                     {
                         if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
@@ -229,6 +234,8 @@ namespace WanaKanaSharp
                     syllable += c;
                     if (options != null && options.PassRomaji)
                         result += c;
+                    else if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
+                        result += options.CustomKanaMapping[syllable];
                     else if (Char.IsLetter(c))
                     {
                         if ((syllable == "n" || syllable == "N") && Constants.EnglishVowels.Contains(input[i + 1]))
