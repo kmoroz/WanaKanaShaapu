@@ -30,5 +30,13 @@ namespace WanaKanaSharp.UnitTests
 
             Assert.AreEqual(result, expectedOutput);
         }
+
+        [TestCase("wanakana", "わにBanaに")]
+        public void ToKana_WhenPassedCustomMapping_ReturnsACorrectString(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input, new DefaultOptions { CustomKanaMapping = new Dictionary<string, string> { { "na", "に" }, { "ka", "Bana" } } });
+
+            Assert.AreEqual(result, expectedOutput);
+        }
     }
 }
