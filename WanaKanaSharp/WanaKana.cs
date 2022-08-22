@@ -8,33 +8,11 @@ namespace WanaKanaSharp
     {
         public static bool IsHiragana(string input)
         {
+            if (string.IsNullOrEmpty(input))
+                return false;
             foreach (char c in input)
             {
-                if ((c >= Constants.HiraganaMin && c <= Constants.HiraganaMax) || c == Constants.Choonpu)
-                    continue;
-                else
-                    return false;
-            }
-            return true;
-        }
-
-        public static bool IsKana(string input)
-        {
-            foreach (char c in input)
-            {
-                if (c >= Constants.KanaMin && c <= Constants.KanaMax)
-                    continue;
-                else
-                    return false;
-            }
-            return true;
-        }
-
-        public static bool IsKanji(string input)
-        {
-            foreach (char c in input)
-            {
-                if (c >= Constants.KanjiMin && c <= Constants.KanjiMax)
+                if (Constants.HiraganaChars.IsCharacterWithinRange(c) || c == Constants.Choonpu)
                     continue;
                 else
                     return false;
@@ -44,9 +22,39 @@ namespace WanaKanaSharp
 
         public static bool IsKatakana(string input)
         {
+            if (string.IsNullOrEmpty(input))
+                return false;
             foreach (char c in input)
             {
-                if (c >= Constants.KatakanaMin && c <= Constants.KatakanaMax)
+                if (Constants.KatakanaChars.IsCharacterWithinRange(c))
+                    continue;
+                else
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool IsKana(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return false;
+            foreach (char c in input)
+            {
+                if (IsHiragana(c.ToString()) || IsKatakana(c.ToString()))
+                    continue;
+                else
+                    return false;
+            }
+            return true;
+        }
+
+        public static bool IsKanji(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return false;
+            foreach (char c in input)
+            {
+                if (Constants.KanjiChars.IsCharacterWithinRange(c))
                     continue;
                 else
                     return false;
@@ -56,23 +64,24 @@ namespace WanaKanaSharp
 
         private static bool IsMacron(char c)
         {
-            if (c == Constants.MacronAMin || c == Constants.MacronAMax
-                || c == Constants.MacronOMin || c == Constants.MacronOMax
-                || c == Constants.MacronUMin || c == Constants.MacronUMax)
-                return true;
+            foreach (var range in Constants.MacronChars)
+            {
+                if (range.IsCharacterWithinRange(c))
+                    return true;
+            }
             return false;
         }
 
         public static bool IsRomaji(string input, [Optional] string allowed)
         {
+            if (string.IsNullOrEmpty(input))
+                return false;
             if (allowed != null)
                 input = Regex.Replace(input, allowed, string.Empty);
 
             foreach (char c in input)
             {
-                if (Char.IsAscii(c) || Char.IsWhiteSpace(c)
-                    || Char.IsPunctuation(c) || IsMacron(c) 
-                    || (c >= Constants.RomajiMin && c <= Constants.RomajiMax))
+                if (Constants.RomajiChars.IsCharacterWithinRange(c) || IsMacron(c))
                     continue;
                 else
                     return false;
@@ -87,9 +96,9 @@ namespace WanaKanaSharp
 
             foreach (char c in input)
             {
-                if (IsKana(c.ToString()) || IsKanji(c.ToString())
-                    || (c >= Constants.JapanesePunctuationMin && c <= Constants.JapanesePunctuationMax)
-                    || (c >= Constants.ZenzakuMin && c <= Constants.ZenzakuMax))
+                var isInRange = Constants.JapaneseChars.Any(ranges => ranges.IsCharacterWithinRange(c));
+
+                if (isInRange)
                     continue;
                 else
                     return false;
@@ -99,20 +108,11 @@ namespace WanaKanaSharp
 
         public static bool IsMixed(string input, [Optional] bool? passKanji)
         {
-            bool containsRomaji = false;
-            bool containsKana = false;
-            foreach (char c in input)
-            {
-                if (IsKana(c.ToString()))
-                    containsKana = true;
-                else if (IsRomaji(c.ToString()))
-                    containsRomaji = true;
-                else if (passKanji.HasValue && !passKanji.Value && IsKanji(c.ToString()))
-                    return false;
-                if (containsRomaji && containsKana)
-                    return true;
-            }
-            return false;
+            bool hasKanji = false;
+            if (passKanji.HasValue && !passKanji.Value)
+                hasKanji = input.Any(chars => IsKanji(chars.ToString()));
+            return (input.Any(chars => IsHiragana(chars.ToString())) || input.Any(chars => IsKatakana(chars.ToString())))
+                && input.Any(chars => IsRomaji(chars.ToString())) && !hasKanji;
         }
 
         public static string StripOkurigana(string input, [Optional] bool leading, [Optional] string matchKanji)
@@ -273,6 +273,7 @@ namespace WanaKanaSharp
             else
                 return "other";
         }
+
         public static string MapCharacterToType(char c, bool compact)
         {
             string letter = c.ToString();
@@ -284,20 +285,20 @@ namespace WanaKanaSharp
                 return "hiragana";
             else if (IsKatakana(letter))
                 return "katakana";
-            else if (IsJapanese(letter) && Char.IsPunctuation(c))
-                return "japanesePunctuation";
             else if (Char.IsWhiteSpace(c))
                 return "space";
+            else if (Constants.ZenkakuNumbers.IsCharacterWithinRange(c))
+                return "japaneseNumeral";
+            else if (IsJapanese(letter) && Char.IsPunctuation(c))
+                return "japanesePunctuation";
+            else if (IsJapanese(letter))
+                return "ja";
             else if (Char.IsAscii(c) && Char.IsLetter(c))
                 return "en";
             else if (Char.IsDigit(c) && Char.IsAscii(c))
                 return "englishNumeral";
-            else if (Char.IsDigit(c))
-                return "japaneseNumeral";
             else if (Char.IsPunctuation(c))
                 return "englishPunctuation";
-            else if (IsRomaji(letter))
-                return "ja";
             else
                 return "other";
         }
