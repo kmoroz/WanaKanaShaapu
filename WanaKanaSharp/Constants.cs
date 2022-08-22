@@ -30,13 +30,23 @@
         public static CharacterRange ZenkakuCurrencyChars = new CharacterRange('\uffe0', '\uffee');
         public static CharacterRange CJKPunctuationChars = new CharacterRange('\u3000', '\u303f');
         public static CharacterRange RomajiChars = new CharacterRange('\u0000', '\u007f');
+        public static CharacterRange ZenkakuPunct1 = new CharacterRange('\uff01', '\uff0f');
+        public static CharacterRange ZenkakuPunct2 = new CharacterRange('\uff1a', '\uff1f');
+        public static CharacterRange ZenkakuPunct3 = new CharacterRange('\uff3b', '\uff3f');
+        public static CharacterRange ZenkakuPunct4 = new CharacterRange('\uff5b', '\uff60');
+        public static CharacterRange KanaPunctChars = new CharacterRange('\uff61', '\uff65');
+        public static CharacterRange KatakanaPunctChars = new CharacterRange('\u30fb', '\u30fc');
 
-        public static CharacterRange[] ZenkakuPunctuation = new CharacterRange[]
+        public static CharacterRange[] JapanesePunctuation = new CharacterRange[]
         {
-            new('\uff01', '\uff0f'),
-            new('\uff1a', '\uff1f'),
-            new('\uff3b', '\uff3f'),
-            new('\uff5b', '\uff60')
+            ZenkakuPunct1,
+            ZenkakuPunct2,
+            ZenkakuPunct3,
+            ZenkakuPunct4,
+            ZenkakuCurrencyChars,
+            CJKPunctuationChars,
+            KanaPunctChars,
+            KatakanaPunctChars
         };
 
         public static CharacterRange[] MacronChars = new CharacterRange[]
@@ -60,7 +70,18 @@
         {
             HiraganaChars,
             KatakanaChars,
-            KanjiChars
+            KanjiChars,
+            ZenkakuNumbers,
+            ZenkakuUppercaseChars,
+            ZenkakuLowercaseChars,
+            ZenkakuCurrencyChars,
+            ZenkakuPunct1,
+            ZenkakuPunct2,
+            ZenkakuPunct3,
+            ZenkakuPunct4,
+            CJKPunctuationChars,
+            KanaPunctChars,
+            KatakanaPunctChars
         };
     }
 }
