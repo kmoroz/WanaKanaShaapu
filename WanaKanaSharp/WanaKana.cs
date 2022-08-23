@@ -116,7 +116,7 @@ namespace WanaKanaSharp
         }
 
         public static string StripOkurigana(string input, [Optional] bool leading, [Optional] string matchKanji)
-         {
+        {
             string okuriganaString = input;
             if (matchKanji != null)
                 okuriganaString = matchKanji;
@@ -172,95 +172,147 @@ namespace WanaKanaSharp
             }
         }
 
-        public static string ToHiragana(string input, [Optional] DefaultOptions options)
+        private static string KatakanaToHiragana(string input, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
-            string syllable = string.Empty;
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (IsKatakana(c.ToString()) && c != Constants.Choonpu)
-                    result += (char)(c - 0x60);
-                else if (c == Constants.Choonpu)
-                    result += HandleChoonpuConversion(input, i, options);
-                else if (IsRomaji(c.ToString()) || IsRomaji(c.ToString()) && options != null && !options.PassRomaji)
-                {
-                    syllable += c;
-                    if (options != null && options.PassRomaji)
-                        result += c;
-                    else if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
-                    {
-                        result += options.CustomKanaMapping[syllable];
-                        syllable = string.Empty;
-                    }
-                    else if (Char.IsLetter(c))
-                    {
-                        if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
-                            continue;
-                        if (IsSokuon(syllable))
-                        {
-                            result += 'っ';
-                            syllable = syllable.Remove(syllable.Length - 1);
-                        }
-                        if (HiraganaRomaji.HiraganaRomajiDictionary.ContainsKey(syllable.ToLower()))
-                        {
-                            if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
-                                result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable.ToLower()];
-                            else
-                                result += HiraganaRomaji.HiraganaRomajiDictionary[syllable.ToLower()];
-                            syllable = string.Empty;
-                        }
-                    }
-                    else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
-                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
-                }
-                else
+                if (IsRomaji(c.ToString()))
                     result += c;
+                else if (IsKatakana(c.ToString()) && c != Constants.Choonpu)
+                    result += (char)(c - 0x60);
+                else
+                    result += HandleChoonpuConversion(input, i, options);
             }
             return result;
         }
 
-        public static string ToKatakana(string input, [Optional] DefaultOptions options)
+        private static string RomajiToHiragana(string input, [Optional] DefaultOptions options)
         {
-            string result = string.Empty;
             string syllable = string.Empty;
+            string result = string.Empty;
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (IsHiragana(c.ToString()))
-                    result += (char)(c + 0x60);
-                else if (IsRomaji(c.ToString()))
+                syllable += c;
+                if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
+                    continue;
+                if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
+                    result += options.CustomKanaMapping[syllable];
+                else if (HiraganaRomaji.HiraganaRomajiDictionary.ContainsKey(syllable))
                 {
-                    syllable += c;
-                    if (options != null && options.PassRomaji)
-                        result += c;
-                    else if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
-                        result += options.CustomKanaMapping[syllable];
-                    else if (Char.IsLetter(c))
-                    {
-                        if ((syllable == "n" || syllable == "N") && Constants.EnglishVowels.Contains(input[i + 1]))
-                            continue;
-                        if (IsSokuon(syllable))
-                        {
-                            result += 'ッ';
-                            syllable = syllable.Remove(syllable.Length - 1);
-                        }
-                        if (HiraganaRomaji.KatakanaRomajiDictionary.ContainsKey(syllable.ToLower()))
-                        {
-                            if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable.ToLower()))
-                                result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable.ToLower()];
-                            else
-                                result += HiraganaRomaji.KatakanaRomajiDictionary[syllable.ToLower()];
-                            syllable = string.Empty;
-                        }      
-                    }
-                    else if (Char.IsPunctuation(c) || Char.IsWhiteSpace(c))
-                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
+                        result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
+                    else
+                        result += HiraganaRomaji.HiraganaRomajiDictionary[syllable];
                 }
                 else
-                    result += c;
+                {
+                    if (IsJapanese(c.ToString()))
+                        result += c;
+                    if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
+                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    continue;
+                }
+                syllable = string.Empty;
             }
             return result;
+        }
+
+        private static string RomajiToKatakana(string input, [Optional] DefaultOptions options)
+        {
+            string syllable = string.Empty;
+            string result = string.Empty;
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                syllable += c;
+                if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
+                    continue;
+                if (IsSokuon(syllable))
+                    result += Constants.SokuonKatakana;
+                if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
+                    result += options.CustomKanaMapping[syllable];
+                else if (HiraganaRomaji.KatakanaRomajiDictionary.ContainsKey(syllable))
+                {
+                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable))
+                        result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable];
+                    else
+                        result += HiraganaRomaji.KatakanaRomajiDictionary[syllable];
+                }
+                else
+                {
+                    if (IsJapanese(c.ToString()))
+                        result += c;
+                    if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
+                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    continue;
+                }
+                syllable = string.Empty;
+            }
+            return result;
+        }
+
+        private static string RomajiToKana(string input, [Optional] DefaultOptions options)
+        {
+            string result = string.Empty;
+            string syllable = string.Empty;
+            if (options != null && options.PassRomaji)
+                return input;
+            else if (input.All(chars => !char.IsUpper(chars)))
+                return RomajiToHiragana(input, options);
+            else if (input.All(chars => !char.IsLower(chars)))
+                return RomajiToKatakana(input.ToLower(), options);
+            return result;
+        }
+
+        private static string HiraganaToKatakana(string input, [Optional] DefaultOptions options)
+        {
+            string result = string.Empty;
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                if (IsRomaji(c.ToString()))
+                    result += c;
+                else if (IsKatakana(c.ToString()) && c != Constants.Choonpu)
+                    result += (char)(c + 0x60);
+                else
+                    result += HandleChoonpuConversion(input, i, options);
+            }
+            return result;
+        }
+
+        public static string ToHiragana(string input, [Optional] DefaultOptions options)
+        {
+            if (options != null && options.PassRomaji)
+                return KatakanaToHiragana(input);
+            else if (IsKatakana(input))
+                return KatakanaToHiragana(input, options);
+            else if (IsRomaji(input))
+                return RomajiToKana(input, options);
+            else if (IsMixed(input))
+            {
+                string convertedKatakana = KatakanaToHiragana(input, options);
+                return RomajiToKana(convertedKatakana.ToLower(), options);
+            }
+            return KatakanaToHiragana(input, options);
+        }
+
+        public static string ToKatakana(string input, [Optional] DefaultOptions options)
+        {
+            if (options != null && options.PassRomaji)
+                return HiraganaToKatakana(input);
+            else if (IsKatakana(input))
+                return HiraganaToKatakana(input, options);
+            else if (IsRomaji(input))
+                return RomajiToKana(input.ToLower(), options);
+            else if (IsMixed(input))
+            {
+                string convertedKatakana = KatakanaToHiragana(input, options);
+                return RomajiToKana(convertedKatakana.ToLower(), options);
+            }
+            return HiraganaToKatakana(input, options);
         }
 
         public static string MapCharacterToTypeCompact(char c)
