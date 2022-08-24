@@ -159,7 +159,7 @@ namespace WanaKanaSharp
             string latinVowel = string.Empty;
             if (IsHiragana(charBeforeChoonpu.ToString()))
             {
-                syllable = HiraganaRomaji.HiraganaRomajiDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
+                syllable = Constants.RomajiHiraganaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
                 latinVowel = syllable.Last().ToString();
                 return latinVowel;
             }
@@ -167,9 +167,9 @@ namespace WanaKanaSharp
             {
                 if (options != null && !options.ConvertLongVowelMark)
                     return "ー";
-                syllable = HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
+                syllable = Constants.RomajiKatakanaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
                 latinVowel = syllable.Last().ToString();
-                string convertedVowel = HiraganaRomaji.HiraganaRomajiDictionary[latinVowel];
+                string convertedVowel = Constants.RomajiHiraganaDictionary[latinVowel];
                 return convertedVowel;
             }
         }
@@ -207,21 +207,21 @@ namespace WanaKanaSharp
                 }
                 if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
                     result += options.CustomKanaMapping[syllable];
-                else if (HiraganaRomaji.HiraganaRomajiDictionary.ContainsKey(syllable))
+                else if (Constants.RomajiHiraganaDictionary.ContainsKey(syllable))
                 {
-                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteHiraganaDictionary.ContainsKey(syllable))
-                        result += HiraganaRomaji.ObsoleteHiraganaDictionary[syllable];
+                    if (options != null && options.UseObsoleteKana && Constants.RomajiObsoleteHiraganaDictionary.ContainsKey(syllable))
+                        result += Constants.RomajiObsoleteHiraganaDictionary[syllable];
                     else
-                        result += HiraganaRomaji.HiraganaRomajiDictionary[syllable];
+                        result += Constants.RomajiHiraganaDictionary[syllable];
                 }
                 else if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                    result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                    result += Constants.WhitespacePunctuationDictionary[c.ToString()];
                 else
                 {
                     if (IsJapanese(c.ToString()))
                         result += c;
                     if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
                     continue;
                 }
                 syllable = string.Empty;
@@ -246,19 +246,19 @@ namespace WanaKanaSharp
                 }
                 if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
                     result += options.CustomKanaMapping[syllable];
-                else if (HiraganaRomaji.KatakanaRomajiDictionary.ContainsKey(syllable))
+                else if (Constants.RomajiKatakanaDictionary.ContainsKey(syllable))
                 {
-                    if (options != null && options.UseObsoleteKana && HiraganaRomaji.ObsoleteKatakanaDictionary.ContainsKey(syllable))
-                        result += HiraganaRomaji.ObsoleteKatakanaDictionary[syllable];
+                    if (options != null && options.UseObsoleteKana && Constants.RomajiObsoleteKatakanaDictionary.ContainsKey(syllable))
+                        result += Constants.RomajiObsoleteKatakanaDictionary[syllable];
                     else
-                        result += HiraganaRomaji.KatakanaRomajiDictionary[syllable];
+                        result += Constants.RomajiKatakanaDictionary[syllable];
                 }
                 else
                 {
                     if (IsJapanese(c.ToString()))
                         result += c;
                     if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                        result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
                     continue;
                 }
                 syllable = string.Empty;
@@ -361,7 +361,7 @@ namespace WanaKanaSharp
                 return "en";
             else if (Char.IsDigit(c) && Char.IsAscii(c))
                 return "englishNumeral";
-            else if (Char.IsPunctuation(c) || HiraganaRomaji.WhitespacePunctuationDictionary.ContainsKey(letter))
+            else if (Char.IsPunctuation(c) || Constants.WhitespacePunctuationDictionary.ContainsKey(letter))
                 return "englishPunctuation";
             else
                 return "other";
@@ -382,7 +382,7 @@ namespace WanaKanaSharp
             string result = string.Empty;
             foreach (char c in input)
             {
-                result += HiraganaRomaji.WhitespacePunctuationDictionary[c.ToString()];
+                result += Constants.WhitespacePunctuationDictionary[c.ToString()];
             }
             return result;
         }
@@ -441,15 +441,15 @@ namespace WanaKanaSharp
                 if (c == Constants.Choonpu && IsHiragana(kana[i - 1].ToString()))
                     result += HandleChoonpuConversion(kana, i);
                 else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
-                    result += HiraganaRomaji.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
+                    result += Constants.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
                 else if (options != null && options.CustomRomajiMapping != null && options.CustomRomajiMapping.ContainsKey(c.ToString()))
                     result += options.CustomRomajiMapping[c.ToString()];
                 else if (IsHiragana(c.ToString()))
-                    result += HiraganaRomaji.HiraganaRomajiDictionary.First(item => item.Value == c.ToString()).Key;
+                    result += Constants.RomajiHiraganaDictionary.First(item => item.Value == c.ToString()).Key;
                 else if (IsKatakana(c.ToString()) && options != null && options.UpcaseKatakana)
-                    result += HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == c.ToString()).Key.ToUpper();
+                    result += Constants.RomajiKatakanaDictionary.First(item => item.Value == c.ToString()).Key.ToUpper();
                 else if (IsKatakana(c.ToString()))
-                    result += HiraganaRomaji.KatakanaRomajiDictionary.First(item => item.Value == c.ToString()).Key;
+                    result += Constants.RomajiKatakanaDictionary.First(item => item.Value == c.ToString()).Key;
                 else
                     result += c;
             }
