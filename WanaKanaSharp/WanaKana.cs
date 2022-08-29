@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace WanaKanaSharp
 {
@@ -120,6 +119,7 @@ namespace WanaKanaSharp
             string okuriganaString = input;
             if (matchKanji != null)
                 okuriganaString = matchKanji;
+
             while (IsHiragana(okuriganaString.Last().ToString()))
             {
                 okuriganaString = okuriganaString.Remove(okuriganaString.Length - 1);
@@ -152,11 +152,12 @@ namespace WanaKanaSharp
             return false;
         }
 
-        public static string HandleChoonpuConversion(string input, int i, [Optional] DefaultOptions options)
+        private static string HandleChoonpuConversion(string input, int i, [Optional] DefaultOptions options)
         {
             char charBeforeChoonpu = input[i - 1];
             string syllable = string.Empty;
             string latinVowel = string.Empty;
+
             if (IsHiragana(charBeforeChoonpu.ToString()))
             {
                 syllable = Constants.RomajiHiraganaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
@@ -279,7 +280,7 @@ namespace WanaKanaSharp
             return result;
         }
 
-        private static string HiraganaToKatakana(string input, [Optional] DefaultOptions options)
+        private static string HiraganaToKatakana(string input, DefaultOptions options)
         {
             string result = string.Empty;
             for (int i = 0; i < input.Length; i++)
@@ -327,7 +328,7 @@ namespace WanaKanaSharp
             return HiraganaToKatakana(input, options);
         }
 
-        public static string MapCharacterToTypeCompact(char c)
+        private static string MapCharacterToTypeCompact(char c)
         {
             string letter = c.ToString();
             if (IsJapanese(letter) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
@@ -338,7 +339,7 @@ namespace WanaKanaSharp
                 return "other";
         }
 
-        public static string MapCharacterToType(char c, bool compact)
+        private static string MapCharacterToType(char c, bool compact)
         {
             string letter = c.ToString();
             if (compact)
@@ -367,7 +368,7 @@ namespace WanaKanaSharp
                 return "other";
         }
 
-        public static string ConvertToKana(string token, [Optional] DefaultOptions options)
+        private static string ConvertToKana(string token, [Optional] DefaultOptions options)
         {
             if (token.Length == 0)
                 return string.Empty;

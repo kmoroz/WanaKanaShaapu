@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace WanaKanaSharp
+﻿namespace WanaKanaSharp
 {
     public struct Token
     {
