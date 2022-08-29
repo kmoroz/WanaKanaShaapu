@@ -60,5 +60,13 @@ namespace WanaKanaSharp.UnitTests
 
             Assert.True(result);
         }
+
+        [TestCase("泣き虫。！〜２￥ｚｅｎｋａｋｕ")]
+        public void IsJapanese_WhenPassedJapaneseCharacters_ReturnsTrue(string input)
+        {
+            var result = WanaKana.IsJapanese(input);
+
+            Assert.True(result);
+        }
     }
 }

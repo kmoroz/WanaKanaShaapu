@@ -7,6 +7,7 @@ namespace WanaKanaSharp.UnitTests
     {
         [TestCase("ふふフフ", new string[]{"ふふ", "フフ"})]
         [TestCase("感じ", new string[]{ "感", "じ" })]
+        [TestCase("hello 田中さん", new string[]{ "hello", " ", "田中", "さん" })]
         [TestCase("truly 私は悲しい", new string[] { "truly", " ", "私", "は", "悲", "しい" })]
         [TestCase("5romaji here...!?漢字ひらがな４カタ　カナ「ＳＨＩＯ」。！", 
             new string[] { "5", "romaji", " ", "here", "...!?", "漢字", "ひらがな", "４", "カタ", "　",　"カナ", "「", "ＳＨＩＯ", "」。！" })]
@@ -17,6 +18,7 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("truly 私は悲しい", true, new string[] { "truly ", "私は悲しい" })]
+        [TestCase("I said 私はすごく悲しい", true, new string[] { "I said ", "私はすごく悲しい" })]
         [TestCase("5romaji here...!?漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！", true,
             new string[] { "5", "romaji here", "...!?", "漢字ひらがなカタ　カナ", "４「", "ＳＨＩＯ", "」。！" })]
         public void Tokenize_WhenPassedCompactTrue_ReturnsCorrectTokens(string input, bool compact, string[] expectedResult)
@@ -54,7 +56,7 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [Test]
-        public void Tokenize_WhenCompactIsTrue_ReturnsDetailedTokens()
+        public void Tokenize_WhenCompactIsTrue_ReturnsLessDetailedTokens()
         {
             var tokenization = WanaKana.Tokenize(input: "5romaji here...!?漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", compact: true);
 
