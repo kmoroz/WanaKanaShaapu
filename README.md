@@ -11,3 +11,14 @@
 ## 🐊🦀 Basic Overview
 
 `WanaKanaShaapu` is a utility library for converting Japanese characters to the Latin ones and detecting the Japanese language in a given input. The C# version is ported from <a href="https://github.com/wanikani/wanakana" title="ft_shrek">WanaKana JS</a> v5.0.0.
+
+## 🐊🦀 Original Documentation
+
+[WanaKana API Documentation](https://wanakana.com/docs/global.html)
+
+## 🐊🦀 Differences in Implementation
+
+
+| Method | WanaKana JS | WanaKanaShaapu |
+| --- | --- | --- |
+| `Tokenize` | 1. `tokenize(input, { detailed: true, compact: false })` </br> 2. Returns either a string array or an object | 1. `Tokenize(input, compact)` </br> 2. Returns `Tokenization` object
