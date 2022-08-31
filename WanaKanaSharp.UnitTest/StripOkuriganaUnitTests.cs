@@ -30,7 +30,8 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
-        [TestCase("おみまい", "お見舞い", true,  "みま")]
+        [TestCase("おみまい", "お見舞い", true, "みまい")]
+        [TestCase("おいわい", "お祝い", true, "いわい")]
         public void StripOkurigana_WhenPassedHiraganaMatchedKanjiAndLeadingTrue_ReturnsHiraganaWithoutOkuriganaMatched(string input, string matchKanji, bool leading, string expectedOutput)
         {
             string result = WanaKana.StripOkurigana(input, matchKanji: matchKanji, leading: leading);
