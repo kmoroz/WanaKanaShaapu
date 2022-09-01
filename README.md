@@ -21,6 +21,6 @@
 
 | Method | WanaKana JS | WanaKanaShaapu |
 | --- | --- | --- |
-| `IsMixed` | `isMixed(input, { passKanji: true })` | `isMixed(input, passKanji)` 
-| `StripOkurigana` | `stripOkurigana(input, { leading: false, matchKanji: '' })` | `stripOkurigana(input, leading, matchKanji)`
+| `IsMixed` | `isMixed(input, { passKanji: true })` | `IsMixed(input, passKanji)` 
+| `StripOkurigana` | `stripOkurigana(input, { leading: false, matchKanji: '' })` | `StripOkurigana(input, leading, matchKanji)`
 | `Tokenize` | 1. `tokenize(input, { detailed: true, compact: false })` </br> 2. Returns either a string array or an object | 1. `Tokenize(input, compact)` </br> 2. Returns `Tokenization` object
