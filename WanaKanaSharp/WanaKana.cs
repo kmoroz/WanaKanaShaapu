@@ -27,7 +27,7 @@ namespace WanaKanaSharp
         }
 
         /// <summary>
-        /// Tests if <c>input</c> only includes kanji, kana, zenkaku numbers, and ja punctuation/symbols.
+        /// Tests if <c>input</c> only includes kanji, kana, zenkaku numbers, or ja punctuation/symbols.
         /// </summary>
         /// <param name="input">The string to check.</param>
         /// <param name="allowed">The regex expression to pass specified chars.</param>
@@ -39,7 +39,7 @@ namespace WanaKanaSharp
 
             foreach (char c in input)
             {
-                var isInRange = Constants.JapaneseChars.Any(ranges => ranges.IsCharacterWithinRange(c));
+                var isInRange = Constants.JapaneseCharacterRanges.Any(ranges => ranges.IsCharacterWithinRange(c));
 
                 if (isInRange)
                     continue;
@@ -121,9 +121,11 @@ namespace WanaKanaSharp
 
             if (passKanji.HasValue && !passKanji.Value)
                 hasKanji = input.Any(chars => IsKanji(chars.ToString()));
-            return (input.Any(chars => IsHiragana(chars.ToString()))
+
+            return input.Any(chars => IsHiragana(chars.ToString())
                 || input.Any(chars => IsKatakana(chars.ToString())))
-                && input.Any(chars => IsRomaji(chars.ToString())) && !hasKanji;
+                && input.Any(chars => IsRomaji(chars.ToString())) 
+                && !hasKanji;
         }
 
         /// <summary>
@@ -156,7 +158,7 @@ namespace WanaKanaSharp
         /// <param name="input">The string to strip from.</param>
         /// <param name="leading">The optional configuration allows to strip the leading okurigana.</param>
         /// <param name="matchKanji">The optional configuration matches the input to kanji.</param>
-        /// <returns>The string stripped from okurigana.</returns>
+        /// <returns>The input stripped from okurigana.</returns>
         public static string StripOkurigana(string input, [Optional] bool leading, [Optional] string matchKanji)
         {
             bool isLeadingWithoutInitialKana = leading && !IsKana(input.First().ToString());
@@ -196,6 +198,7 @@ namespace WanaKanaSharp
             }
             else if (IsRomaji(input))
                 return Utils.RomajiToHiragana(input, options);
+
             return Utils.KatakanaToHiragana(input, options);
         }
 
@@ -239,6 +242,7 @@ namespace WanaKanaSharp
             }
             else if (IsRomaji(input))
                 return Utils.RomajiToKatakana(input.ToLower(), options);
+
             return Utils.HiraganaToKatakana(input, options);
         }
 
@@ -287,22 +291,24 @@ namespace WanaKanaSharp
         public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
+            var hiraganaRomajiDictionary = Constants.RomajiHiraganaDictionary.ToDictionary(x => x.Value, x => x.Key);
+            var katakanaRomajiDictionary = Constants.RomajiKatakanaDictionary.ToDictionary(x => x.Value, x => x.Key);
 
             for (int i = 0; i < kana.Length; i++)
             {
                 char c = kana[i];
-                if (c == Constants.Choonpu && IsHiragana(kana[i - 1].ToString()))
-                    result += Utils.ConvertChoonpu(kana, i);
-                else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c) || c == Constants.Choonpu)
-                    result += Constants.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
+                if (c == Constants.Choonpu)
+                    result += Utils.ConvertChoonpu(kana, i, true, options);
+                else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c))
+                    result += Utils.ConvertPunctuation(c.ToString());
                 else if (options != null && options.CustomRomajiMapping != null && options.CustomRomajiMapping.ContainsKey(c.ToString()))
                     result += options.CustomRomajiMapping[c.ToString()];
                 else if (IsHiragana(c.ToString()))
-                    result += Constants.RomajiHiraganaDictionary.First(item => item.Value == c.ToString()).Key;
+                    result += hiraganaRomajiDictionary[c.ToString()];
                 else if (IsKatakana(c.ToString()) && options != null && options.UpcaseKatakana)
-                    result += Constants.RomajiKatakanaDictionary.First(item => item.Value == c.ToString()).Key.ToUpper();
+                    result += katakanaRomajiDictionary[c.ToString()].ToUpper();
                 else if (IsKatakana(c.ToString()))
-                    result += Constants.RomajiKatakanaDictionary.First(item => item.Value == c.ToString()).Key;
+                    result += katakanaRomajiDictionary[c.ToString()];
                 else
                     result += c;
             }
