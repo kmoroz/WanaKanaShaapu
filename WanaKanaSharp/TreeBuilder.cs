@@ -94,9 +94,10 @@ namespace WanaKanaSharp
 
             //TSU TREE
             //iterate over the existing tree and if value[0] is in sokuonwhitelist add node with sokuonwhitelist[value[0]] + value
-            var tsuChildren = new Dictionary<string, Node>(tree);
 
-            foreach(var node in tsuChildren.Values)
+            var tsuChildren = tree.ToDictionary(entry => entry.Key, entry => new Node(entry.Value.Data, entry.Value.Children));
+
+            foreach (var node in tsuChildren.Values)
                 ResolveTsu(node);
 
             tree.Add("っ", new Node(string.Empty, tsuChildren));
@@ -115,10 +116,12 @@ namespace WanaKanaSharp
             //AMBIGUOUS_VOWELS
             //iterate over AMBIGUOUS_VOWELS and do n'AMBIGUOUS_VOWEL
             // e.g. node　ん　node あ　ー＞ n'a
+            foreach(var kana in Constants.AmbiguousVowels)
+            {
+                tree["ん"].Children.Add(kana.ToString(), new Node("n'" + tree[kana.ToString()].Data));
+            }
 
             return tree;
         }
-
- 
     }
 }
