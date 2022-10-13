@@ -291,28 +291,8 @@ namespace WanaKanaSharp
         public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
-            var hiraganaRomajiDictionary = Constants.RomajiHiraganaDictionary.ToDictionary(x => x.Value, x => x.Key);
-            var katakanaRomajiDictionary = Constants.RomajiKatakanaDictionary.ToDictionary(x => x.Value, x => x.Key);
-
-            for (int i = 0; i < kana.Length; i++)
-            {
-                char c = kana[i];
-                if (c == Constants.Choonpu)
-                    result += Utils.ConvertChoonpu(kana, i, true, options);
-                else if (Char.IsWhiteSpace(c) && IsJapanese(c.ToString()) || Char.IsPunctuation(c))
-                    result += Utils.ConvertPunctuation(c.ToString());
-                else if (options != null && options.CustomRomajiMapping != null && options.CustomRomajiMapping.ContainsKey(c.ToString()))
-                    result += options.CustomRomajiMapping[c.ToString()];
-                else if (IsHiragana(c.ToString()))
-                    result += hiraganaRomajiDictionary[c.ToString()];
-                else if (IsKatakana(c.ToString()) && options != null && options.UpcaseKatakana)
-                    result += katakanaRomajiDictionary[c.ToString()].ToUpper();
-                else if (IsKatakana(c.ToString()))
-                    result += katakanaRomajiDictionary[c.ToString()];
-                else
-                    result += c;
-            }
-            return result;
+            var tree = TreeBuilder.BuildTree();
+            return TreeTraverser.TraverseTree(kana, tree);
         }
     }
 }
