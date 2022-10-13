@@ -17,7 +17,9 @@ namespace WanaKanaSharp.UnitTests
 
             var tsuTree = tree["っ"];
             var mmi = tsuTree.Children["み"].Data;
+            var mi = tree["み"].Data;
             Assert.AreEqual(mmi, "mmi");
+            Assert.AreEqual(mi, "mi");
         }
     }
 }
