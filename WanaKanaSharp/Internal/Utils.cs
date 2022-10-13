@@ -16,10 +16,10 @@ namespace WanaKanaSharp.Internal
 
         internal static bool IsSokuon(string input)
         {
-            if (WanaKana.IsJapanese(input))
-                return false;
+            if (input == Constants.SokuonHiragana || input == Constants.SokuonKatakana)
+                return true;
 
-            if (input.Length == 2)
+            if (input.Length == 2 && !WanaKana.IsJapanese(input))
             {
                 if (input.First() == input.Last())
                     return true;
@@ -243,11 +243,26 @@ namespace WanaKanaSharp.Internal
             else
             {
                 foreach (char c in input)
-                {
-                    result += Constants.WhitespacePunctuationDictionary[c.ToString()];
+                {   if (Constants.WhitespacePunctuationDictionary.ContainsKey(c.ToString()))
+                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
+                    else
+                        result += c;
                 }
             }
             return result;
+        }
+
+        internal static string ResolveSokuon(string input)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                char letter = input[i];
+                if (IsSokuon(letter.ToString()) && i + 1 < input.Length)
+                {
+                    input = input.Substring(0, i) + input[i + 1] + input.Substring(i + 1);
+                }
+            }
+            return input;
         }
     }
 }
