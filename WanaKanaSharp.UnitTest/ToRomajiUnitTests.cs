@@ -7,6 +7,7 @@ namespace WanaKanaSharp.UnitTests
     {
         [TestCase("ひらがな　カタカナ", "hiragana katakana")]
         [TestCase("げーむ　ゲーム", "geemu ge-mu")]
+        [TestCase("がっこうなかった", "gakkounakatta")]
         public void ToRomaji_WhenPassedKana_ReturnsItConvertedToLatinCharacters(string input, string expectedOutput)
         {
             string result = WanaKana.ToRomaji(input);
