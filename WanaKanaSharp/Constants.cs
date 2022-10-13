@@ -130,6 +130,8 @@
             ("　", " "),
         };
 
+        public static char[] AmbiguousVowels = { 'あ', 'い', 'う', 'え', 'お', 'や', 'ゆ', 'よ' };
+
         public static (string Kana, string Transliteration)[] smallY = new (string Kana, string Transliteration)[]
         {
             ( "ゃ", "ya"), ("ゅ", "yu"), ("ょ", "yo")
