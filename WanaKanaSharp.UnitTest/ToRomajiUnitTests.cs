@@ -8,6 +8,10 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("ひらがな　カタカナ", "hiragana katakana")]
         [TestCase("げーむ　ゲーム", "geemu ge-mu")]
         [TestCase("がっこうなかった", "gakkounakatta")]
+        [TestCase("!!がっこうなかった!!", "!!gakkounakatta!!")]
+        [TestCase("ったったった", "ttattatta")]
+        [TestCase("っこ った っこ", "kko tta kko")]
+        [TestCase("!!  っこ った っこ  !!", "!!  kko tta kko  !!")]
         public void ToRomaji_WhenPassedKana_ReturnsItConvertedToLatinCharacters(string input, string expectedOutput)
         {
             string result = WanaKana.ToRomaji(input);
@@ -15,6 +19,11 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
+        [TestCase("ひらがな", true, "hiragana")]
+        [TestCase(" !!ひら!!がな!!  ", true, " !!hira!!gana!!  ")]
+        [TestCase("ひらがな ひらがな", true, "hiragana hiragana")]
+        [TestCase("   ...   ひらがな@@@@@@@@@", true, "   ...   hiragana@@@@@@@@@")]
+        [TestCase("カタカナ", true, "KATAKANA")]
         [TestCase("ひらがな カタカナ", true, "hiragana KATAKANA")]
         public void ToRomaji_WhenPassedUpcaseKatakanaTrue_ReturnsUppercaseLatinCharacters(string input, bool upcaseKatakana, string expectedOutput)
         {
