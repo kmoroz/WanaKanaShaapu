@@ -70,12 +70,12 @@ namespace WanaKanaSharp.Internal
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (WanaKana.IsRomaji(c.ToString()))
-                    result += c;
-                else if (c == Constants.Choonpu)
-                    result += ConvertChoonpu(result, i, false, options);
-                else
+                if (c == Constants.Choonpu)
+                    result += ConvertChoonpu(input, i, false, options);
+                else if (WanaKana.IsKatakana(c.ToString()))
                     result += (char)(c - 0x60);
+                else
+                    result += c;
             }
             return result;
         }
