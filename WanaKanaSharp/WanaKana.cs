@@ -194,10 +194,10 @@ namespace WanaKanaSharp
             else if (IsMixed(input))
             {
                 string convertedKatakana = Utils.KatakanaToHiragana(input, options);
-                return Utils.RomajiToHiragana(convertedKatakana.ToLower(), options);
+                return ToKana(convertedKatakana.ToLower(), options);
             }
             else if (IsRomaji(input))
-                return Utils.RomajiToHiragana(input, options);
+                return ToKana(input, options);
 
             return Utils.KatakanaToHiragana(input, options);
         }
@@ -291,8 +291,22 @@ namespace WanaKanaSharp
         public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
+            bool katakanaToUpper = options != null && options.UpcaseKatakana;
             var tree = TreeBuilder.BuildTree();
-            return TreeTraverser.TraverseTree(kana, tree);
+            if (katakanaToUpper)
+            {
+                Tokenization kanaTokens = Tokenize(kana);
+                foreach (var token in kanaTokens.Tokens)
+                {
+                    if (token.Type == "katakana")
+                        result += TreeTraverser.TraverseTree(ToHiragana(token.Value), tree, options).ToUpper();
+                    else
+                        result += TreeTraverser.TraverseTree(token.Value, tree, options);
+                }
+                return result;
+            }
+            kana = ToHiragana(kana, options);
+            return TreeTraverser.TraverseTree(kana, tree, options);
         }
     }
 }
