@@ -86,7 +86,7 @@
 
         #region dictionaries
 
-        public static (string Kana, string Transliteration)[] basicRomaji = new (string Kana, string Transliteration)[]
+        public static (string Kana, string Transliteration)[] BasicRomaji = new (string Kana, string Transliteration)[]
         {
             ("あ","a"),     ("い", "i"),   ("う", "u"),   ("え", "e"),   ("お", "o"),
             ("か", "ka"),   ("き", "ki"),  ("く", "ku"),  ("け", "ke"),  ("こ", "ko"),
@@ -107,7 +107,7 @@
             ("ゔぁ", "va"), ("ゔぃ", "vi"), ("ゔ", "vu"),  ("ゔぇ", "ve"), ("ゔぉ", "vo")
         };
 
-        public static (string jSymbol, string Transliteration)[] specialSymbols = new (string jSymbol, string Transliteration)[]
+        public static (string JSymbol, string Symbol)[] SpecialSymbolsJpRomaji = new (string JSymbol, string Symbol)[]
         {
             ("。", "."),
             ("、", ","),
@@ -132,7 +132,7 @@
 
         public static char[] AmbiguousVowels = { 'あ', 'い', 'う', 'え', 'お', 'や', 'ゆ', 'よ' };
 
-        public static (string Kana, string Transliteration)[] smallY = new (string Kana, string Transliteration)[]
+        public static (string Kana, string Transliteration)[] SmallYJpRomaji = new (string Kana, string Transliteration)[]
         {
             ( "ゃ", "ya"), ("ゅ", "yu"), ("ょ", "yo")
         };
@@ -174,20 +174,6 @@
             ("ぢ", "j"),
         };
 
-/*        public static (char Kana, string Transliteration)[] YOON_KANA  = new (char Kana, string Transliteration)[] {
-            ('き',"ki"),
-            ('に',"p"),
-            ('ひ',"p"),
-            ('み',"p"),
-            ('り',"p"),
-            ('ぎ',"p"),
-            ('び',"p"),
-            ('ぴ',"p"),
-            ('ゔ',"p"),
-            ('く',"p"),
-            ('ふ',"p")
-        };*/
-
         public static (string Kana, string Transliteration)[] smallKana = new (string Kana, string Transliteration)[]
         {
             ("っ", ""),
@@ -201,29 +187,187 @@
             ("ぉ", "o"),
         };
 
-        public static Dictionary<char, string> SokuonWhitelist = new ()
+        public static Dictionary<char, string> SokuonWhitelist = new()
         {
-            {'b', "b"},
-            {'c', "t"},
-            {'d', "d"},
-            {'f', "f"},
-            {'g', "g"},
-            {'h', "h"},
-            {'j', "j"},
-            {'k', "k"},
-            {'m', "m"},
-            {'p', "p"},
-            {'q', "q"},
-            {'r', "r"},
-            {'s', "s"},
-            {'t', "t"},
-            {'v', "v"},
-            {'w', "w"},
-            {'x', "x"},
-            {'z', "z"}
+            { 'b', "b" },
+            { 'c', "t" },
+            { 'd', "d" },
+            { 'f', "f" },
+            { 'g', "g" },
+            { 'h', "h" },
+            { 'j', "j" },
+            { 'k', "k" },
+            { 'm', "m" },
+            { 'p', "p" },
+            { 'q', "q" },
+            { 'r', "r" },
+            { 's', "s" },
+            { 't', "t" },
+            { 'v', "v" },
+            { 'w', "w" },
+            { 'x', "x" },
+            { 'z', "z" }
         };
 
+         //{"a", "あ" }, {"i", "い" }, {"u", "う" }, {"e", "え" }, {"o", "お" },
+        public static Dictionary<string, (string Romaji, string Kana)[]> BasicKunrei = new ()
+        {
+            { "a", new (string Romaji, string Kana)[] { ("", "あ") } },
+            { "i", new (string Romaji, string Kana)[] { ("", "い") } },
+            { "u", new (string Romaji, string Kana)[] { ("", "う") } },
+            { "e", new (string Romaji, string Kana)[] { ("", "え") } },
+            { "o", new (string Romaji, string Kana)[] { ("", "お") } },
+            { "k", new (string Romaji, string Kana)[] { ("a", "か"), ("i", "き"), ("u", "く"), ("e", "け"), ("o", "こ") } },
+            { "s", new (string Romaji, string Kana)[] { ("a", "さ"), ("i", "し"), ("u", "す"), ("e", "せ"), ("o", "そ") } },
+            { "t", new (string Romaji, string Kana)[] { ("a", "た"), ("i", "ち"), ("u", "つ"), ("e", "て"), ("o", "と") } },
+            { "n", new (string Romaji, string Kana)[] { ("a", "な"), ("i", "に"), ("u", "ぬ"), ("e", "ね"), ("o", "の") } },
+            { "h", new (string Romaji, string Kana)[] { ("a", "は"), ("i", "ひ"), ("u", "ふ"), ("e", "へ"), ("o", "ほ") } },
+            { "m", new (string Romaji, string Kana)[] { ("a", "ま"), ("i", "み"), ("u", "む"), ("e", "め"), ("o", "も") } },
+            { "y", new (string Romaji, string Kana)[] { ("a", "や"), ("u", "ゆ"), ("o", "よ") } },
+            { "r", new (string Romaji, string Kana)[] { ("a", "ら"), ("i", "り"), ("u", "る"), ("e", "れ"), ("o", "ろ") } },
+            { "w", new (string Romaji, string Kana)[] { ("a", "わ"), ("i", "ゐ"), ("e", "ゑ"), ("o", "を"), } },
+            { "g", new (string Romaji, string Kana)[] { ("a", "が"), ("i", "ぎ"), ("u", "ぐ"), ("e", "げ"), ("o", "ご") } },
+            { "z", new (string Romaji, string Kana)[] { ("a", "ざ"), ("i", "じ"), ("u", "ず"), ("e", "ぜ"), ("o", "ぞ") } },
+            { "d", new (string Romaji, string Kana)[] { ("a", "だ"), ("i", "ぢ"), ("u", "づ"), ("e", "で"), ("o", "ど") } },
+            { "b", new (string Romaji, string Kana)[] { ("a", "ば"), ("i", "び"), ("u", "ぶ"), ("e", "べ"), ("o", "ぼ") } },
+            { "p", new (string Romaji, string Kana)[] { ("a", "ぱ"), ("i", "ぴ"), ("u", "ぷ"), ("e", "ぺ"), ("o", "ぽ") } },
+            { "v", new (string Romaji, string Kana)[] { ("a", "ゔぁ"), ("i", "ゔぃ"), ("u", "ゔ"), ("e", "ゔぇ"), ("o", "ゔぉ") } }
+        };
 
+        public static (string Symbol, string JSymbol)[] SpecialSymbolsRomajiJp = new (string Symbol, string JSymbol)[]
+        {
+            (".", "。"),
+            (",", "、"),
+            (":", "："),
+            ("/", "・"),
+            ("!", "！"),
+            ("?", "？"),
+            ("~", "〜"),
+            ("-", "ー"),
+            ("‘", "「"),
+            ("’", "」"),
+            ("“", "『"),
+            ("”", "』"),
+            ("[", "［"),
+            ("]", "］"),
+            ("(", "（"),
+            (")", "）"),
+            ("{", "｛"),
+            ("}", "｝"),
+            (" ", "　"),
+        };
+
+        public static (string Romaji, string Kana)[] Consonants = new (string Romaji, string Kana)[]
+        {
+            ("k", "き"),
+            ("s", "し"),
+            ("t", "ち"),
+            ("n", "に"),
+            ("h", "ひ"),
+            ("m", "み"),
+            ("r", "り"),
+            ("g", "ぎ"),
+            ("z", "じ"),
+            ("d", "ぢ"),
+            ("b", "び"),
+            ("p", "ぴ"),
+            ("v", "ゔ"),
+            ("q", "く"),
+            ("f", "ふ"),
+        };
+
+        public static (string Romaji, string Kana)[] SmallYRomajiJp = new (string Romaji, string Kana)[]
+        {
+            ("ya", "ゃ"), 
+            ("yi", "ぃ"), 
+            ("yu", "ゅ"), 
+            ("ye", "ぇ"), 
+            ("yo", "ょ"),
+        };
+
+        public static (string Romaji, string Kana)[] SmallVowels = new (string Romaji, string Kana)[]
+        {
+            ("a", "ぁ"), 
+            ("i", "ぃ"), 
+            ("u", "ぅ"), 
+            ("e", "ぇ"), 
+            ("o", "ぉ"),
+        };
+
+        // typing one should be the same as having typed the other instead
+        public static (string Romaji, string Kana)[] Aliases = new (string Romaji, string Kana)[]
+        {
+            ("sh", "sy"), // sha -> sya
+            ("ch", "ty"), // cho -> tyo
+            ("cy", "ty"), // cyo -> tyo
+            ("chy", "ty"), // chyu -> tyu
+            ("shy", "sy"), // shya -> sya
+            ("j", "zy"), // ja -> zya
+            ("jy", "zy"), // jye -> zye
+
+            // exceptions to above rules
+            ("shi", "si"),
+            ("chi", "ti"),
+            ("tsu", "tu"),
+            ("ji", "zi"),
+            ("fu", "hu"),
+        };
+
+        public static (string Romaji, string Kana)[] SmallLetters
+        {
+            get
+            {
+                var list = new List<(string Romaji, string Kana)>
+                {
+                    ("tu", "っ"),
+                    ("wa", "ゎ"),
+                    ("ka", "ヵ"),
+                    ("ke", "ヶ"),
+                };
+
+                list.AddRange(SmallVowels);
+                list.AddRange(SmallYRomajiJp);
+
+                return list.ToArray();
+            }
+        }
+
+        // don't follow any notable patterns
+        public static (string Romaji, string Kana)[] SpecialCases = new (string Romaji, string Kana)[]
+        {
+            ("yi", "い"),
+            ("wu", "う"),
+            ("ye", "いぇ"),
+            ("wi", "うぃ"),
+            ("we", "うぇ"),
+            ("kwa", "くぁ"),
+            ("whu", "う"),
+            // because it's not thya for てゃ but tha
+            // and tha is not てぁ, but てゃ
+            ("tha", "てゃ"),
+            ("thu", "てゅ"),
+            ("tho", "てょ"),
+            ("dha", "でゃ"),
+            ("dhu", "でゅ"),
+            ("dho", "でょ"),
+        };
+
+        public static (string Romaji, string Kana)[] AIUEOConstructions = new (string Romaji, string Kana)[]
+        {
+            ("wh", "う"),
+            ("kw", "く"),
+            ("qw", "く"),
+            ("q", "く"),
+            ("gw", "ぐ"),
+            ("sw", "す"),
+            ("ts", "つ"),
+            ("th", "て"),
+            ("tw", "と"),
+            ("dh", "で"),
+            ("dw", "ど"),
+            ("fw", "ふ"),
+            ("f", "ふ"),
+        };
 
 
         readonly public static Dictionary<string, string> RomajiHiraganaDictionary = new Dictionary<string, string>()
