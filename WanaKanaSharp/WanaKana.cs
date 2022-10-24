@@ -292,7 +292,7 @@ namespace WanaKanaSharp
         {
             string result = string.Empty;
             bool katakanaToUpper = options != null && options.UpcaseKatakana;
-            var tree = TreeBuilder.BuildTree();
+            var tree = TreeBuilder.BuildKanaToHepburnTree();
             if (katakanaToUpper)
             {
                 Tokenization kanaTokens = Tokenize(kana);
