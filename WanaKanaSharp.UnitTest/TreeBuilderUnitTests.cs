@@ -29,8 +29,15 @@ namespace WanaKanaSharp.UnitTests
 
             var a = tree["a"].Data;
             var ka = tree["k"].Children["a"].Data;
+            var wha = tree["w"].Children["h"].Children["a"].Data;
+            var qa = tree["q"].Children["a"].Data;
+            var xn = tree["x"].Children["n"].Data;
+
             Assert.AreEqual(a, "あ");
             Assert.AreEqual(ka, "か");
+            Assert.AreEqual(wha, "うぁ");
+            Assert.AreEqual(qa, "くぁ");
+            Assert.AreEqual(xn, "ん");
         }
     }
 }
