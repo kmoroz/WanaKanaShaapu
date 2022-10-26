@@ -33,11 +33,33 @@ namespace WanaKanaSharp.UnitTests
             var qa = tree["q"].Children["a"].Data;
             var xn = tree["x"].Children["n"].Data;
 
+            //aliases
+            var ja = tree["j"].Children["a"].Data;
+            var zya = tree["z"].Children["y"].Children["a"].Data;
+            var sha = tree["s"].Children["h"].Children["a"].Data;
+            var sya = tree["s"].Children["y"].Children["a"].Data;
+            var shi = tree["s"].Children["h"].Children["i"].Data;
+            var si = tree["s"].Children["i"].Data;
+            var fu = tree["f"].Children["u"].Data;
+            var hu = tree["h"].Children["u"].Data;
+
+            //x&l subtrees
+            var xo = tree["x"].Children["o"].Data;
+            var xwa = tree["x"].Children["w"].Children["a"].Data;
+            var ltu = tree["l"].Children["t"].Children["u"].Data;
+
             Assert.AreEqual(a, "あ");
             Assert.AreEqual(ka, "か");
             Assert.AreEqual(wha, "うぁ");
             Assert.AreEqual(qa, "くぁ");
             Assert.AreEqual(xn, "ん");
+            Assert.AreEqual(ja, zya);
+            Assert.AreEqual(sha, sya);
+            Assert.AreEqual(shi, si);
+            Assert.AreEqual(fu, hu);
+            Assert.AreEqual(xo, "ぉ");
+            Assert.AreEqual(xwa, "ゎ");
+            Assert.AreEqual(ltu, "っ");
         }
     }
 }
