@@ -295,7 +295,7 @@
         };
 
         // typing one should be the same as having typed the other instead
-        public static (string Romaji, string Kana)[] Aliases = new (string Romaji, string Kana)[]
+        public static (string Alias, string Alternative)[] Aliases = new (string Alias, string Alternative)[]
         {
             ("sh", "sy"), // sha -> sya
             ("ch", "ty"), // cho -> tyo
