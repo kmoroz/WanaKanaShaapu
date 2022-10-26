@@ -9,6 +9,30 @@ namespace WanaKanaSharp
 {
     public class TreeBuilder
     {
+        private static void BuildLXSubtrees(Dictionary<string, Node> tree, string key)
+        {
+            foreach (var smallLetter in Constants.SmallLetters)
+            {
+                var xSubtree = tree[key];
+                if (smallLetter.Romaji.Length == 1)
+                    xSubtree.Children.Add(smallLetter.Romaji, new Node(smallLetter.Kana));
+                else
+                {
+                    var firstChar = smallLetter.Romaji.First().ToString();
+                    var lastChar = smallLetter.Romaji.Last().ToString();
+                    foreach (char c in smallLetter.Romaji)
+                    {
+                        if (firstChar == c.ToString())
+                        {
+                            if (!xSubtree.Children.ContainsKey(firstChar))
+                                xSubtree.Children.Add(firstChar, new Node(string.Empty));
+                        }
+                        else
+                            xSubtree.Children[firstChar].Children.Add(lastChar, new Node(smallLetter.Kana));
+                    }
+                }
+            }
+        }
         public static Dictionary<string, Node> BuildRomajiToKanaTree()
         {
             var tree = new Dictionary<string, Node>();
@@ -95,7 +119,22 @@ namespace WanaKanaSharp
             // c is equivalent to k, but not for chi, cha, etc. that's why we have to make a copy of k
             tree["c"] = tree["k"];
 
+            //aliases
+            foreach(var alias in Constants.Aliases)
+            {
+                var alternativeSubtree = tree[alias.Alternative[0].ToString()].Children[alias.Alternative[1].ToString()];
+                if (alias.Alias.Length == 1)
+                        tree[alias.Alias] = alternativeSubtree;
+                else if (alias.Alias.Length == 2)
+                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()] = alternativeSubtree;
+                else
+                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()].Children[alias.Alias[2].ToString()] = alternativeSubtree;
+            }
 
+            //x & l subtree
+            BuildLXSubtrees(tree, "x");
+            tree.Add("l", new Node(string.Empty));
+            BuildLXSubtrees(tree, "l");
 
             return tree;
         }
