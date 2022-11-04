@@ -1,53 +1,41 @@
 ﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace WanaKanaSharp.UnitTests
 {
     [TestFixture]
     internal class KanaToHepburnTreeBuilderUnitTests
     {
-        private Dictionary<string, Node> _hiraganaTree;
+        private Dictionary<string, Node> _hepburnTree;
 
         [OneTimeSetUp]
-        public void SetupTestFixture()
+        public void Setup()
         {
-            _hiraganaTree = TreeBuilder.BuildKanaToHepburnTree();
+            _hepburnTree = TreeBuilder.BuildKanaToHepburnTree();
         }
 
-        [TestCaseSource("KanaToHepburnTestCases")]
-        public void KanaToHepburnTree_WhenBuilt_HasCorrectValues(KanaToHepburnTestCase testCase)
-            => testCase.Test(_hiraganaTree);
-
-        static KanaToHepburnTestCase[] KanaToHepburnTestCases =
+        [Test]
+        public void BuildKanaToHepburnTree_WhenBuilt_HasCorrectValues()
         {
-            new KanaToHepburnTestCase{ Input = "み", ExpectedOutput = "mi"},
-            new KanaToHepburnTestCase{ Input = "。", ExpectedOutput = "."},
-            new KanaToHepburnTestCase{ Input = "ょ", ExpectedOutput = "yo"},
-            new KanaToHepburnTestCase{ Input = "ふょ", ExpectedOutput = "fyo"},
-            new KanaToHepburnTestCase{ Input = "みょ", ExpectedOutput = "myo"},
-            new KanaToHepburnTestCase{ Input = "にゅ", ExpectedOutput = "nyu"},
-            new KanaToHepburnTestCase{ Input = "ひぇ", ExpectedOutput = "hye"},
-            new KanaToHepburnTestCase{ Input = "くぃ", ExpectedOutput = "kyi"},
-            new KanaToHepburnTestCase{ Input = "じゃ", ExpectedOutput = "ja"},
-            new KanaToHepburnTestCase{ Input = "ぢゃ", ExpectedOutput = "ja"},
-            new KanaToHepburnTestCase{ Input = "じぃ", ExpectedOutput = "jyi"},
-            new KanaToHepburnTestCase{ Input = "じぇ", ExpectedOutput = "je"},
-            new KanaToHepburnTestCase{ Input = "っみ", ExpectedOutput = "mmi"},
-            new KanaToHepburnTestCase{ Input = "んあ", ExpectedOutput = "n'a"},
-            new KanaToHepburnTestCase{ Input = "んん", ExpectedOutput = "nn"},
-        };
-
-        internal class KanaToHepburnTestCase
-        {
-            public string Input { get; set; }
-            public string ExpectedOutput { get; set; }
-
-            public void Test(Dictionary<string, Node> tree)
-            {
-                var output = TreeTraverser.TraverseTree(Input, tree);
-
-                Assert.AreEqual(output, ExpectedOutput, $"Expected '{Input}' => {ExpectedOutput} but was '{Input}' => {output}");
-            }
+            Assert.AreEqual(_hepburnTree["み"].Data, "mi");
+            Assert.AreEqual(_hepburnTree["。"].Data, ".");
+            Assert.AreEqual(_hepburnTree["ょ"].Data, "yo");
+            Assert.AreEqual(_hepburnTree["ふ"].Children["ょ"].Data, "fyo");
+            Assert.AreEqual(_hepburnTree["み"].Children["ょ"].Data, "myo");
+            Assert.AreEqual(_hepburnTree["に"].Children["ゅ"].Data, "nyu");
+            Assert.AreEqual(_hepburnTree["ひ"].Children["ぇ"].Data, "hye");
+            Assert.AreEqual(_hepburnTree["く"].Children["ぃ"].Data, "kyi");
+            Assert.AreEqual(_hepburnTree["じ"].Children["ゃ"].Data, "ja");
+            Assert.AreEqual(_hepburnTree["ぢ"].Children["ゃ"].Data, "ja");
+            Assert.AreEqual(_hepburnTree["じ"].Children["ぃ"].Data, "jyi");
+            Assert.AreEqual(_hepburnTree["じ"].Children["ぇ"].Data, "je");
+            Assert.AreEqual(_hepburnTree["っ"].Children["み"].Data, "mmi");
+            Assert.AreEqual(_hepburnTree["ん"].Children["あ"].Data, "n'a");
+            Assert.AreEqual(_hepburnTree["ん"].Data, "n");
         }
-
     }
 }
