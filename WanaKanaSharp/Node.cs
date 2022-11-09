@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WanaKanaSharp
 {
+    [Serializable]
     public class Node
     {
         public string Data { get; set; } = string.Empty;
@@ -32,5 +33,7 @@ namespace WanaKanaSharp
             Data = data;
             Children = children;
         }
+
+        public Node(){}
     }
 }
