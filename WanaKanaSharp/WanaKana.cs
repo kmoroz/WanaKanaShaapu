@@ -189,7 +189,9 @@ namespace WanaKanaSharp
         /// <returns>The string converted to hiragana.</returns>
         public static string ToHiragana(string input, [Optional] DefaultOptions options)
         {
-            if (options != null && options.PassRomaji)
+            if (options is null)
+                options = new DefaultOptions();
+            if (options.PassRomaji)
                 return Utils.KatakanaToHiragana(input, options);
             else if (IsMixed(input))
             {
@@ -210,19 +212,28 @@ namespace WanaKanaSharp
         /// <returns>The string converted to kana.</returns>
         public static string ToKana(string input, [Optional] DefaultOptions options)
         {
-            Tokenization inputTokens = Tokenize(input);
             string convertedString = string.Empty;
-
-            foreach (var token in inputTokens.Tokens)
+            var tree = Constants.RomajiToKanaTree;
+            if (options is null)
+                options = new DefaultOptions();
+            if (options.CustomKanaMapping.Count != 0)
+                tree = Utils.CreateCustomTree(options);
+            if (options.UseObsoleteKana)
+                tree = Utils.AddObsoleteKana();
+            if (input.Any(char.IsUpper))
             {
-                if (token.Type == "en")
-                    convertedString += Utils.RomajiToKana(token.Value, options);
-                else if (token.Type == "englishPunctuation")
-                    convertedString += Utils.ConvertPunctuation(token.Value);
-                else
-                    convertedString += token.Value;
+                var slicedInput = Utils.SliceInput(input);
+                foreach(string slice in slicedInput)
+                {
+                    if (slice.Any(char.IsUpper))
+                        convertedString += ToKatakana(TreeTraverser.TraverseTree(convertedString, slice.ToLower(), tree, tree, options));
+                    else
+                        convertedString += TreeTraverser.TraverseTree(convertedString, slice, tree, tree, options);
+                }
+                return convertedString;
             }
-            return convertedString;
+
+            return TreeTraverser.TraverseTree(convertedString, input, tree, tree, options);
         }
 
         /// <summary>
@@ -233,15 +244,15 @@ namespace WanaKanaSharp
         /// <returns>The string converted to hiragana.</returns>
         public static string ToKatakana(string input, [Optional] DefaultOptions options)
         {
-            if (options != null && options.PassRomaji)
+            if (options is null)
+                options = new DefaultOptions();
+            if (options.PassRomaji)
                 return Utils.HiraganaToKatakana(input, options);
-            else if (IsMixed(input))
+            else if (IsMixed(input) || IsRomaji(input))
             {
-                string convertedHiragana = Utils.HiraganaToKatakana(input, options);
-                return Utils.RomajiToKatakana(convertedHiragana.ToLower(), options);
+                string convertedHiragana = ToKana(input.ToLower(), options);
+                return Utils.HiraganaToKatakana(convertedHiragana, options);
             }
-            else if (IsRomaji(input))
-                return Utils.RomajiToKatakana(input.ToLower(), options);
 
             return Utils.HiraganaToKatakana(input, options);
         }
@@ -291,22 +302,25 @@ namespace WanaKanaSharp
         public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
             string result = string.Empty;
+            string convertedString = string.Empty;
+            Tokenization kanaTokens = Tokenize(kana);
             bool katakanaToUpper = options != null && options.UpcaseKatakana;
-            var tree = TreeBuilder.BuildKanaToHepburnTree();
+            var tree = Constants.KanaToHepburnTree;
+            if (options is null)
+                options = new DefaultOptions();
             if (katakanaToUpper)
             {
-                Tokenization kanaTokens = Tokenize(kana);
                 foreach (var token in kanaTokens.Tokens)
                 {
                     if (token.Type == "katakana")
-                        result += TreeTraverser.TraverseTree(ToHiragana(token.Value), tree, options).ToUpper();
+                        result += TreeTraverser.TraverseTree(convertedString, ToHiragana(token.Value), tree, tree, options).ToUpper();
                     else
-                        result += TreeTraverser.TraverseTree(token.Value, tree, options);
+                        result += TreeTraverser.TraverseTree(convertedString, token.Value, tree, tree, options);
                 }
                 return result;
             }
             kana = ToHiragana(kana, options);
-            return TreeTraverser.TraverseTree(kana, tree, options);
+            return TreeTraverser.TraverseTree(convertedString, kana, tree, tree, options);
         }
     }
 }
