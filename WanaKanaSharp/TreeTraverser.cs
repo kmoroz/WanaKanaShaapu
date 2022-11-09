@@ -4,39 +4,40 @@ namespace WanaKanaSharp
 {
     public static class TreeTraverser
     {
-        public static string TraverseTree(string word, Dictionary<string, Node> tree, [Optional] DefaultOptions options)
+        public static string TraverseTree(string result, string word, Dictionary<string, Node> head, Dictionary<string, Node> tree, [Optional] DefaultOptions options)
         {
             if (word.Length == 0)
                 return string.Empty;
 
-            if (options != null && options.CustomRomajiMapping != null && options.CustomRomajiMapping.ContainsKey(word[0].ToString()))
-                return options.CustomRomajiMapping[word[0].ToString()] + TraverseTree(word[1..], tree, options);
+            if (options is null)
+                options = new DefaultOptions();
 
-            Node node;
-            tree.TryGetValue(word[0].ToString(), out node);
+            //If character is not in tree, add and continue
+            if (!tree.ContainsKey(word[0].ToString()))
+                return word[0].ToString() + TraverseTree(result, word[1..], head, tree, options);
             
-            //If there are no nodes, we return the character as is (e.g. 'a', 'b', '?')
-            if (node is null)
-                return word[0].ToString() + TraverseTree(word[1..], tree, options);
 
-            //If the node has children, we traverse as far as we can
-            if (node.Children.Any())
-            {
-                for (var i = 1; i < word.Length; i++)
-                {
-                    Node child = node.FindChild(word[i].ToString());
+            Node node = tree[word[0].ToString()];
+            if (options.CustomRomajiMapping.ContainsKey(word[0].ToString()))
+                return options.CustomRomajiMapping[word[0].ToString()] + TraverseTree(result, word[1..], tree, tree, options);
+            
+            if (word.Length == 1)
+                return node.Data;
 
-                    if (child is null)
-                        continue;
+            if (WanaKana.IsHiragana(word.First().ToString()))
+                result = node.Data;
 
-                    return child.Data + TraverseTree(word[(i+1)..], tree, options);
-                }
-            }
+            if (!node.Children.Any() || !node.Children.ContainsKey(word[1].ToString()))
+                result = node.Data;
+            if (!node.Children.Any() && word.Length == 1)
+                return result;
 
-            //If the node had children but none we a match, we 
-            //call the method on the remainder of the string
-            return node.Data + TraverseTree(word[1..], tree, options);
+            if (node.Children.ContainsKey(word[1].ToString()))
+                return TraverseTree(result, word[1..], head, tree[word[0].ToString()].Children, options);
+            else
+                return result += TraverseTree(result, word[1..], head, head, options);
+
+            return string.Empty;
         }
     }
-
 }
