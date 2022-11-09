@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using System.Text.Json;
 
 namespace WanaKanaSharp
 {
@@ -33,6 +29,29 @@ namespace WanaKanaSharp
                 }
             }
         }
+
+        private static void AddToRomajiKanaTree(Dictionary<string, Node> tree, string key, string value)
+        {
+            string firstChar = key.First().ToString();
+            string lastChar = key.Last().ToString();
+
+            if (!tree.ContainsKey(firstChar))
+                tree.Add(firstChar, new Node(string.Empty));
+            if (key.Length == 2)
+            {
+                if (!tree[firstChar].Children.ContainsKey(lastChar))
+                    tree[firstChar].Children.Add(lastChar, new Node(value));
+                tree[firstChar].Children[lastChar].Data = value;
+            }
+            else if (key.Length == 3)
+            {
+                var secondChar = key[1].ToString();
+                if (!tree[firstChar].Children[secondChar].Children.ContainsKey(lastChar))
+                    tree[firstChar].Children[secondChar].Children.Add(lastChar, new Node(value));
+                tree[firstChar].Children[secondChar].Children[lastChar].Data = value;
+            }
+        }
+
         public static Dictionary<string, Node> BuildRomajiToKanaTree()
         {
             var tree = new Dictionary<string, Node>();
@@ -104,10 +123,7 @@ namespace WanaKanaSharp
             foreach(var expression in nExpressions)
             {
                 if (expression.Length == 1)
-                {
-                    if (!tree.ContainsKey(expression))
-                        tree.Add(expression, new Node("ん"));
-                }
+                    tree["n"].Data = "ん";
                 else
                 {
                     if (!tree.ContainsKey(expression.First().ToString()))
@@ -117,18 +133,20 @@ namespace WanaKanaSharp
             }
 
             // c is equivalent to k, but not for chi, cha, etc. that's why we have to make a copy of k
-            tree["c"] = tree["k"];
+            var kSubtreeCopy = JsonSerializer.Serialize(tree["k"].Children);
+            tree.Add("c", new Node(string.Empty, JsonSerializer.Deserialize<Dictionary<string, Node>>(kSubtreeCopy)));
 
             //aliases
-            foreach(var alias in Constants.Aliases)
+            foreach (var alias in Constants.Aliases)
             {
-                var alternativeSubtree = tree[alias.Alternative[0].ToString()].Children[alias.Alternative[1].ToString()];
+                var node = JsonSerializer.Serialize(tree[alias.Alternative[0].ToString()].Children[alias.Alternative[1].ToString()]);
+                var nodeCopy = JsonSerializer.Deserialize<Node>(node);
                 if (alias.Alias.Length == 1)
-                        tree[alias.Alias] = alternativeSubtree;
+                    tree[alias.Alias] = nodeCopy;
                 else if (alias.Alias.Length == 2)
-                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()] = alternativeSubtree;
+                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()] = nodeCopy;
                 else
-                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()].Children[alias.Alias[2].ToString()] = alternativeSubtree;
+                    tree[alias.Alias[0].ToString()].Children[alias.Alias[1].ToString()].Children[alias.Alias[2].ToString()] = nodeCopy;
             }
 
             //x & l subtree
@@ -136,10 +154,34 @@ namespace WanaKanaSharp
             tree.Add("l", new Node(string.Empty));
             BuildLXSubtrees(tree, "l");
 
+            foreach (var exception in Constants.SpecialCases)
+                AddToRomajiKanaTree(tree, exception.Romaji, exception.Kana);
+
+            //tsu
+            foreach (var consonant in Constants.Consonants)
+            {
+                var serialisedConsonantSubtree = JsonSerializer.Serialize(tree[consonant.Romaji].Children);
+                var subtreeCopy = JsonSerializer.Deserialize<Dictionary<string, Node>>(serialisedConsonantSubtree);
+                foreach (var node in subtreeCopy.Values)
+                    addTsu(node);
+                tree[consonant.Romaji].Children.Add(consonant.Romaji, new Node(string.Empty, subtreeCopy));
+            }
+            // nn should not be っん
+            tree["n"].Children.Remove("n");
+
             return tree;
         }
 
-        public static Dictionary<string, Node> BuildKanaToHepburnTree()
+        private static void addTsu(Node node)
+        {
+            if (node.Data.Length != 0)
+                node.Data = "っ" + node.Data;
+            foreach (var childNode in node.Children)
+                addTsu(childNode.Value);
+        }
+
+
+        public static Dictionary<string, Node> BuildKanaToHepburnTreeWithoutTsuAndNSubtree()
         {
             var tree = new Dictionary<string, Node>();
 
@@ -183,16 +225,6 @@ namespace WanaKanaSharp
                     tree[kana].Children.Add(yKana.Kana, new Node(firstRomajiChar + yKana.Transliteration));
                 }
             }
-            /*            foreach (var yoonKana in Constants.yoonKana)
-            {
-                foreach (var smallVowel in Constants.smallAIUEO)
-                {
-                    var newNode = new Node(yoonKana.Transliteration + smallVowel.Transliteration);
-                    tree[yoonKana.Kana].Children.Add(smallVowel.Kana, newNode);
-                }
-            }*/
-
-
 
             //YOON_KANA for each exceptional Yoon Kana:
             //   find the node in the tree
@@ -209,33 +241,23 @@ namespace WanaKanaSharp
                 tree[kana.Kana].Children.Add("ぇ", new Node(kana.Transliteration + "e"));
             }
 
-            //smallY
-            //iterate over small y list and merge it with the first char of yoon kana and add a node
-            // e.g. き＋ゃ　＝＞　きゃ
+            return tree;
+        }
 
-            //smallYExtra
-            //iterate over small y extra list and merge it with the first char of yoon kana and add a node
-            // e.g. き＋ゃ　＝＞　きゃ
-
-            //YOON_EXCEPTIONS
-            // part 1 iterate over YOON_EXCEPTIONS list and merge it with the SECOND char of smallY list and add a node
-            // e.g. じゃ -> ja 
-            // part 2 iterate over YOON_EXCEPTIONS, add small i or small e nodes and add -yi and -e readings to them
-
-            //TSU TREE
-            //iterate over the existing tree and if value[0] is in sokuonwhitelist add node with sokuonwhitelist[value[0]] + value
-
-            var tsuChildren = tree.ToDictionary(entry => entry.Key, entry => new Node(entry.Value.Data, entry.Value.Children));
-
-            foreach (var node in tsuChildren.Values)
-                ResolveTsu(node);
+        public static Dictionary<string, Node> BuildKanaToHepburnTree()
+        {
+            var tree = BuildKanaToHepburnTreeWithoutTsuAndNSubtree();
+            var tsuChildren = BuildKanaToHepburnTreeWithoutTsuAndNSubtree();
 
             tree.Add("っ", new Node(string.Empty, tsuChildren));
+
+            foreach (var node in tree["っ"].Children.Values)
+                ResolveTsu(node);
 
             static void ResolveTsu(Node node)
             {
                 char firstLetter = node.Data[0];
-                if(Constants.SokuonWhitelist.ContainsKey(firstLetter))
+                if (Constants.SokuonWhitelist.ContainsKey(firstLetter))
                 {
                     string sokuonMapping = Constants.SokuonWhitelist[firstLetter];
                     node.Data = sokuonMapping + node.Data;
@@ -243,10 +265,8 @@ namespace WanaKanaSharp
                 foreach (var childNode in node.Children)
                     ResolveTsu(childNode.Value);
             }
-            //AMBIGUOUS_VOWELS
-            //iterate over AMBIGUOUS_VOWELS and do n'AMBIGUOUS_VOWEL
-            // e.g. node　ん　node あ　ー＞ n'a
-            foreach(var kana in Constants.AmbiguousVowels)
+
+            foreach (var kana in Constants.AmbiguousVowels)
             {
                 tree["ん"].Children.Add(kana.ToString(), new Node("n'" + tree[kana.ToString()].Data));
             }
