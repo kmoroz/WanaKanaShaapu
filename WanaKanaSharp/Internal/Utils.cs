@@ -29,38 +29,17 @@ namespace WanaKanaSharp.Internal
 
         internal static string ConvertChoonpu(string input, int i, bool isDestinationRomaji, [Optional] DefaultOptions options)
         {
-            char charBeforeChoonpu = input[i - 1];
-
-            if (isDestinationRomaji)
+            if (!options.ConvertLongVowelMark)
+                return "ー";
+            else
             {
-                if (WanaKana.IsKatakana(charBeforeChoonpu.ToString()))
-                    return "-";
-                else
-                {
-                    string syllable = Constants.RomajiHiraganaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
-                    string latinVowel = syllable.Last().ToString();
-                    return latinVowel;
-                }
+                var syllable = Constants.KanaToHepburnTree[input[i - 1].ToString()].Data;
+                var longVowel = syllable.Last().ToString();
+                var longVowelConverted = Constants.RomajiToKanaTree[longVowel].Data;
+                if (!isDestinationRomaji)
+                    return longVowelConverted;
+                return longVowel;
             }
-            if (WanaKana.IsHiragana(charBeforeChoonpu.ToString()))
-            {
-                if (options != null && !options.ConvertLongVowelMark)
-                    return "ー";
-                string syllable = Constants.RomajiHiraganaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
-                string latinVowel = syllable.Last().ToString();
-                string convertedVowel = Constants.RomajiHiraganaDictionary[latinVowel];
-                return convertedVowel;
-            }
-            else if (WanaKana.IsKatakana(charBeforeChoonpu.ToString()))
-            {
-                if (options != null && options.ConvertLongVowelMark)
-                {
-                    string syllable = Constants.RomajiKatakanaDictionary.First(item => item.Value == charBeforeChoonpu.ToString()).Key;
-                    string latinVowel = syllable.Last().ToString();
-                    return latinVowel;
-                }  
-            }
-            return "ー";
         }
 
         internal static string KatakanaToHiragana(string input, [Optional] DefaultOptions options)
@@ -70,105 +49,14 @@ namespace WanaKanaSharp.Internal
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (c == Constants.Choonpu)
-                    result += ConvertChoonpu(input, i, false, options);
-                else if (WanaKana.IsKatakana(c.ToString()))
+                bool isPreviousCharHiragana = i > 0 && WanaKana.IsHiragana(input[i - 1].ToString());
+                if (c == Constants.Choonpu && !isPreviousCharHiragana)
+                    result += ConvertChoonpu(result, i, false, options);
+                else if (WanaKana.IsKatakana(c.ToString()) && c != Constants.Choonpu)
                     result += (char)(c - 0x60);
                 else
                     result += c;
             }
-            return result;
-        }
-
-        internal static string RomajiToHiragana(string input, [Optional] DefaultOptions options)
-        {
-            string syllable = string.Empty;
-            string result = string.Empty;
-
-            for (int i = 0; i < input.Length; i++)
-            {
-                char c = input[i];
-                syllable += c;
-                if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
-                    continue;
-                if (IsSokuon(syllable))
-                {
-                    result += Constants.SokuonHiragana;
-                    syllable = syllable.Remove(syllable.Length - 1);
-                }
-                if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
-                    result += options.CustomKanaMapping[syllable];
-                else if (Constants.RomajiHiraganaDictionary.ContainsKey(syllable))
-                {
-                    if (options != null && options.UseObsoleteKana && Constants.RomajiObsoleteHiraganaDictionary.ContainsKey(syllable))
-                        result += Constants.RomajiObsoleteHiraganaDictionary[syllable];
-                    else
-                        result += Constants.RomajiHiraganaDictionary[syllable];
-                }
-                else if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                    result += Constants.WhitespacePunctuationDictionary[c.ToString()];
-                else
-                {
-                    if (WanaKana.IsJapanese(c.ToString()))
-                        result += c;
-                    if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
-                    continue;
-                }
-                syllable = string.Empty;
-            }
-            return result;
-        }
-
-        internal static string RomajiToKatakana(string input, [Optional] DefaultOptions options)
-        {
-            string syllable = string.Empty;
-            string result = string.Empty;
-
-            for (int i = 0; i < input.Length; i++)
-            {
-                char c = input[i];
-                syllable += c;
-                if (syllable == "n" && i + 1 < input.Length && Constants.EnglishVowels.Contains(input[i + 1]))
-                    continue;
-                if (IsSokuon(syllable))
-                {
-                    result += Constants.SokuonKatakana;
-                    syllable = syllable.Remove(syllable.Length - 1);
-                }
-                if (options != null && options.CustomKanaMapping != null && options.CustomKanaMapping.ContainsKey(syllable))
-                    result += options.CustomKanaMapping[syllable];
-                else if (Constants.RomajiKatakanaDictionary.ContainsKey(syllable))
-                {
-                    if (options != null && options.UseObsoleteKana && Constants.RomajiObsoleteKatakanaDictionary.ContainsKey(syllable))
-                        result += Constants.RomajiObsoleteKatakanaDictionary[syllable];
-                    else
-                        result += Constants.RomajiKatakanaDictionary[syllable];
-                }
-                else
-                {
-                    if (WanaKana.IsJapanese(c.ToString()))
-                        result += c;
-                    if (char.IsPunctuation(c) || char.IsWhiteSpace(c))
-                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
-                    continue;
-                }
-                syllable = string.Empty;
-            }
-            return result;
-        }
-
-        internal static string RomajiToKana(string input, [Optional] DefaultOptions options)
-        {
-            string result = string.Empty;
-            string syllable = string.Empty;
-
-            if (options != null && options.PassRomaji)
-                return input;
-            else if (input.All(chars => !char.IsUpper(chars)))
-                return RomajiToHiragana(input, options);
-            else if (input.All(chars => !char.IsLower(chars)))
-                return RomajiToKatakana(input.ToLower(), options);
             return result;
         }
 
@@ -179,12 +67,10 @@ namespace WanaKanaSharp.Internal
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (WanaKana.IsRomaji(c.ToString()))
-                    result += c;
-                else if (c == Constants.Choonpu)
-                    result += ConvertChoonpu(result, i, false, options);
-                else
+                if (WanaKana.IsHiragana(c.ToString()))
                     result += (char)(c + 0x60);
+                else
+                    result += c;
             }
             return result;
         }
@@ -223,33 +109,10 @@ namespace WanaKanaSharp.Internal
                 return "en";
             else if (Char.IsDigit(c) && Char.IsAscii(c))
                 return "englishNumeral";
-            else if (Char.IsPunctuation(c) || Constants.WhitespacePunctuationDictionary.ContainsKey(letter))
+            else if (Char.IsPunctuation(c)) //|| Constants.WhitespacePunctuationDictionary.ContainsKey(letter))
                 return "englishPunctuation";
             else
                 return "other";
-        }
-
-        internal static string ConvertPunctuation(string input)
-        {
-            string result = string.Empty;
-
-            if (WanaKana.IsJapanese(input))
-            {
-                foreach (char c in input)
-                {
-                    result += Constants.WhitespacePunctuationDictionary.First(item => item.Value == c.ToString()).Key;
-                }
-            }
-            else
-            {
-                foreach (char c in input)
-                {   if (Constants.WhitespacePunctuationDictionary.ContainsKey(c.ToString()))
-                        result += Constants.WhitespacePunctuationDictionary[c.ToString()];
-                    else
-                        result += c;
-                }
-            }
-            return result;
         }
 
         internal static string ResolveSokuon(string input)
@@ -263,6 +126,52 @@ namespace WanaKanaSharp.Internal
                 }
             }
             return input;
+        }
+
+        internal static Dictionary<string, Node> AddObsoleteKana()
+        {
+            var treeCopy = TreeBuilder.BuildRomajiToKanaTree();
+            foreach (var kana in Constants.ObsoleteKana)
+                treeCopy[kana.Romaji.First().ToString()].Children[kana.Romaji.Last().ToString()].Data = kana.Kana;
+            return treeCopy;
+        }
+
+        internal static Dictionary<string, Node> CreateCustomTree(DefaultOptions options)
+        {
+            var treeCopy = TreeBuilder.BuildRomajiToKanaTree();
+            foreach (var pair in options.CustomKanaMapping)
+                ChangeNodeData(treeCopy, pair.Key, pair.Value);
+            return treeCopy;
+        }
+
+        internal static void ChangeNodeData(Dictionary<string, Node> tree, string key, string value)
+        {
+            Node node = tree[key.First().ToString()];
+            if (key.Length == 1 || !node.Children.Any())
+                node.Data = value;
+            else if (node.Children.ContainsKey(key[1].ToString()))
+                ChangeNodeData(tree[key.First().ToString()].Children, key[1..], value);
+        }
+
+        internal static List<string> SliceInput(string input)
+        {
+            List<string> inputArray = new List<string>();
+            string temp = string.Empty;
+            for (int i = 1; i < input.Length; i++)
+            {
+                if ((char.IsLower(input[i]) && char.IsLower(input[i - 1]))
+                    || (char.IsUpper(input[i]) && char.IsUpper(input[i - 1])) || char.IsWhiteSpace(input[i - 1]))
+                    temp += input[i - 1];
+                else
+                {
+                    temp += input[i - 1];
+                    inputArray.Add(temp);
+                    temp = string.Empty;
+                }
+            }
+            temp += input.Last();
+            inputArray.Add(temp);
+            return inputArray;
         }
     }
 }
