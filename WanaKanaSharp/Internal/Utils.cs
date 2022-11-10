@@ -52,8 +52,10 @@ namespace WanaKanaSharp.Internal
                 bool isPreviousCharHiragana = i > 0 && WanaKana.IsHiragana(input[i - 1].ToString());
                 if (c == Constants.Choonpu && !isPreviousCharHiragana)
                     result += ConvertChoonpu(result, i, false, options);
-                else if (WanaKana.IsKatakana(c.ToString()) && c != Constants.Choonpu)
-                    result += (char)(c - 0x60);
+                else if (WanaKana.IsKatakana(c.ToString()) 
+                    && c != Constants.Choonpu
+                    && !Constants.KanaAsSymbol.Contains(c.ToString()))
+                        result += (char)(c - 0x60);
                 else
                     result += c;
             }
