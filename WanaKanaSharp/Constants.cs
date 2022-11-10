@@ -34,6 +34,7 @@
         readonly public static CharacterRange ZenkakuPunct4 = new CharacterRange('\uff5b', '\uff60');
         readonly public static CharacterRange KanaPunctChars = new CharacterRange('\uff61', '\uff65');
         readonly public static CharacterRange KatakanaPunctChars = new CharacterRange('\u30fb', '\u30fc');
+        readonly public static CharacterRange EnglishPunctRange = new CharacterRange('\u30fb', '\u30fc');
 
         readonly public static CharacterRange[] JapanesePunctuationRanges = new CharacterRange[]
         {
@@ -181,6 +182,12 @@
             ("ぉ", "o"),
         };
 
+        public static string[] KanaAsSymbol =
+        {
+            "ヶ", 
+            "ヵ"
+        };
+
         public static Dictionary<char, string> SokuonWhitelist = new()
         {
             { 'b', "b" },
@@ -314,6 +321,7 @@
                 var list = new List<(string Romaji, string Kana)>
                 {
                     ("tu", "っ"),
+                    ("tsu", "っ"),
                     ("wa", "ゎ"),
                     ("ka", "ヵ"),
                     ("ke", "ヶ"),
