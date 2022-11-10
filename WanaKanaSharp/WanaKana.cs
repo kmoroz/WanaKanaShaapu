@@ -198,7 +198,7 @@ namespace WanaKanaSharp
                 string convertedKatakana = Utils.KatakanaToHiragana(input, options);
                 return ToKana(convertedKatakana.ToLower(), options);
             }
-            else if (IsRomaji(input))
+            else if (IsRomaji(input) || input.Any(chars => Char.IsPunctuation(chars)))
                 return ToKana(input, options);
 
             return Utils.KatakanaToHiragana(input, options);
