@@ -5,50 +5,39 @@ namespace WanaKanaSharp
 {
     public class TreeBuilder
     {
-        private static void BuildLXSubtrees(Dictionary<string, Node> tree, string key)
+        private static void BuildSubtree(Node node, (string Romaji, string Kana)[] constant)
         {
-            foreach (var smallLetter in Constants.SmallLetters)
+            foreach(var entry in constant)
+                AddNode(node, entry.Romaji, entry.Kana);
+        }
+
+        private static void AddToTree(Dictionary<string, Node> tree, (string Romaji, string Kana)[] constant)
+        {
+            foreach (var entry in constant)
             {
-                var xSubtree = tree[key];
-                if (smallLetter.Romaji.Length == 1)
-                    xSubtree.Children.Add(smallLetter.Romaji, new Node(smallLetter.Kana));
-                else
-                {
-                    var firstChar = smallLetter.Romaji.First().ToString();
-                    var lastChar = smallLetter.Romaji.Last().ToString();
-                    foreach (char c in smallLetter.Romaji)
-                    {
-                        if (firstChar == c.ToString())
-                        {
-                            if (!xSubtree.Children.ContainsKey(firstChar))
-                                xSubtree.Children.Add(firstChar, new Node(string.Empty));
-                        }
-                        else
-                            xSubtree.Children[firstChar].Children.Add(lastChar, new Node(smallLetter.Kana));
-                    }
-                }
+                string firstChar = entry.Romaji.First().ToString();
+                if (!tree.ContainsKey(firstChar))
+                    tree.Add(firstChar, new Node(string.Empty));
+
+                AddNode(tree[firstChar], entry.Romaji[1..], entry.Kana);
             }
         }
 
-        private static void AddToRomajiKanaTree(Dictionary<string, Node> tree, string key, string value)
+        private static void AddNode(Node node, string romaji, string kana)
         {
-            string firstChar = key.First().ToString();
-            string lastChar = key.Last().ToString();
-
-            if (!tree.ContainsKey(firstChar))
-                tree.Add(firstChar, new Node(string.Empty));
-            if (key.Length == 2)
+            if (romaji.Length == 1 && !node.Children.ContainsKey(romaji))
+                node.Children.Add(romaji, new Node(kana));
+            else if (romaji.Length == 1 && node.Children.ContainsKey(romaji))
+                node.Children[romaji].Data = kana;
+            else
             {
-                if (!tree[firstChar].Children.ContainsKey(lastChar))
-                    tree[firstChar].Children.Add(lastChar, new Node(value));
-                tree[firstChar].Children[lastChar].Data = value;
-            }
-            else if (key.Length == 3)
-            {
-                var secondChar = key[1].ToString();
-                if (!tree[firstChar].Children[secondChar].Children.ContainsKey(lastChar))
-                    tree[firstChar].Children[secondChar].Children.Add(lastChar, new Node(value));
-                tree[firstChar].Children[secondChar].Children[lastChar].Data = value;
+                foreach (char c in romaji)
+                {
+                    if (!node.Children.ContainsKey(c.ToString()))
+                        node.Children.Add(c.ToString(), new Node(string.Empty));
+                    node = node.Children[c.ToString()];
+                    AddNode(node, romaji[1..], kana);
+                }
             }
         }
 
@@ -74,48 +63,27 @@ namespace WanaKanaSharp
 
             //special symbols
             foreach (var symbol in Constants.SpecialSymbolsRomajiJp)
-            {
                 tree.Add(symbol.Symbol, new Node(symbol.JSymbol));
-            }
 
             //add tya, sya, etc.
+            AddToTree(tree, Constants.Consonants);
             foreach(var consonant in Constants.Consonants)
             {
-                if (!tree.ContainsKey(consonant.Romaji))
-                    tree.Add(consonant.Romaji, new Node(string.Empty));
                 foreach (var smallY in Constants.SmallYRomajiJp)
-                {
-                    if (!tree[consonant.Romaji].Children.ContainsKey("y"))
-                        tree[consonant.Romaji].Children.Add("y", new Node(string.Empty));
-                    tree[consonant.Romaji].Children["y"].Children.Add(smallY.Romaji[1].ToString(), new Node(consonant.Kana + smallY.Kana));
-                }
+                    AddNode(tree[consonant.Romaji], smallY.Romaji, consonant.Kana + smallY.Kana);
             }
 
             //things like うぃ, くぃ, etc.
+            AddToTree(tree, Constants.AIUEOConstructions);
             foreach (var construction in Constants.AIUEOConstructions)
             {
-                if (!tree.ContainsKey(construction.Romaji.First().ToString()))
-                    tree.Add(construction.Romaji.First().ToString(), new Node(string.Empty));
-                if (construction.Romaji.Length == 1)
+                foreach (var vowel in Constants.SmallVowels)
                 {
-                    foreach (var vowel in Constants.SmallVowels)
-                        tree[construction.Romaji].Children.Add(vowel.Romaji, new Node(construction.Kana + vowel.Kana));
+                    if (construction.Romaji.Length == 1)
+                        AddNode(tree[construction.Romaji], vowel.Romaji, construction.Kana + vowel.Kana);
+                    else
+                        AddNode(tree[construction.Romaji.First().ToString()].Children[construction.Romaji.Last().ToString()], vowel.Romaji, construction.Kana + vowel.Kana);
                 }
-                else
-                {
-                    //get the second letter (e.g. for wh, 'h')
-                    var nextConsonant = construction.Romaji[1].ToString();
-
-                    //declare a new subtree to store the next consonant + small vowels
-                    var nextConsonantVowelSubtree = new Dictionary<string, Node>();
-
-                    //iterate through the small vowels and create a sub tree
-                    foreach (var smallVowel in Constants.SmallVowels)
-                        nextConsonantVowelSubtree.Add(smallVowel.Romaji, new Node(construction.Kana + smallVowel.Kana));
-
-                    tree[construction.Romaji.First().ToString()].Children.Add(nextConsonant, new Node(string.Empty, nextConsonantVowelSubtree));
-                }
-
             }
 
             // different ways to write ん
@@ -150,12 +118,13 @@ namespace WanaKanaSharp
             }
 
             //x & l subtree
-            BuildLXSubtrees(tree, "x");
+            BuildSubtree(tree["x"], Constants.SmallLetters);
             tree.Add("l", new Node(string.Empty));
-            BuildLXSubtrees(tree, "l");
+            BuildSubtree(tree["l"], Constants.SmallLetters);
 
-            foreach (var exception in Constants.SpecialCases)
-                AddToRomajiKanaTree(tree, exception.Romaji, exception.Kana);
+
+            //add or modify special cases
+            AddToTree(tree, Constants.SpecialCases);
 
             //tsu
             foreach (var consonant in Constants.Consonants)
@@ -165,6 +134,15 @@ namespace WanaKanaSharp
                 foreach (var node in subtreeCopy.Values)
                     addTsu(node);
                 tree[consonant.Romaji].Children.Add(consonant.Romaji, new Node(string.Empty, subtreeCopy));
+            }
+            string[] consonants = { "c", "y", "w", "j" };
+            foreach (var consonant in consonants)
+            {
+                var serialisedConsonantSubtree = JsonSerializer.Serialize(tree[consonant].Children);
+                var subtreeCopy = JsonSerializer.Deserialize<Dictionary<string, Node>>(serialisedConsonantSubtree);
+                foreach (var node in subtreeCopy.Values)
+                    addTsu(node);
+                tree[consonant].Children.Add(consonant, new Node(string.Empty, subtreeCopy));
             }
             // nn should not be っん
             tree["n"].Children.Remove("n");
