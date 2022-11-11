@@ -18,6 +18,8 @@
         public const string EnglishVowels = "aeiouAEIOU";
         public const string SokuonHiragana = "っ";
         public const string SokuonKatakana = "ッ";
+        public const char ProlongedSoundMark = '\u30fc';
+        public const char KanaSlashDot = '\u30fb';
 
         readonly public static CharacterRange HiraganaChars = new CharacterRange('\u3040', '\u309f');
         readonly public static CharacterRange KatakanaChars = new CharacterRange('\u30a0', '\u30ff');
@@ -34,7 +36,6 @@
         readonly public static CharacterRange ZenkakuPunct4 = new CharacterRange('\uff5b', '\uff60');
         readonly public static CharacterRange KanaPunctChars = new CharacterRange('\uff61', '\uff65');
         readonly public static CharacterRange KatakanaPunctChars = new CharacterRange('\u30fb', '\u30fc');
-        readonly public static CharacterRange EnglishPunctRange = new CharacterRange('\u30fb', '\u30fc');
 
         readonly public static CharacterRange[] JapanesePunctuationRanges = new CharacterRange[]
         {
