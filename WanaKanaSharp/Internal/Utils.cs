@@ -50,7 +50,8 @@ namespace WanaKanaSharp.Internal
             {
                 char c = input[i];
                 bool isPreviousCharHiragana = i > 0 && WanaKana.IsHiragana(input[i - 1].ToString());
-                if (c == Constants.Choonpu && !isPreviousCharHiragana)
+                if (c == Constants.Choonpu && !isPreviousCharHiragana
+                    && i != 0)
                     result += ConvertChoonpu(result, i, false, options);
                 else if (WanaKana.IsKatakana(c.ToString()) 
                     && c != Constants.Choonpu
@@ -69,7 +70,8 @@ namespace WanaKanaSharp.Internal
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (WanaKana.IsHiragana(c.ToString()))
+                if (WanaKana.IsHiragana(c.ToString()) && !isCharLongDash(c)
+                    && !isCharSlashDot(c))
                     result += (char)(c + 0x60);
                 else
                     result += c;
@@ -174,6 +176,19 @@ namespace WanaKanaSharp.Internal
             temp += input.Last();
             inputArray.Add(temp);
             return inputArray;
+        }
+
+        internal static bool isCharLongDash(char c)
+        {
+            if (c == Constants.ProlongedSoundMark)
+                return true;
+            return false;
+        }
+        internal static bool isCharSlashDot(char c)
+        {
+            if (c == Constants.KanaSlashDot)
+                return true;
+            return false;
         }
     }
 }
