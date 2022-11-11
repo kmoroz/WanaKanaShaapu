@@ -5,6 +5,62 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class ToRomajiUnitTests
     {
+        [TestCase("ヶ", "ヶ")]
+        [TestCase("ヵ", "ヵ")]
+        [TestCase("1", "1")]
+        [TestCase("@", "@")]
+        [TestCase("#", "#")]
+        [TestCase("$", "$")]
+        [TestCase("%", "%")]
+        public void ToRomaji_WhenPassedCertainSymbols_ReturnsThemUnconverted(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToRomaji(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("！", "！", "!")]
+        [TestCase("？", "？", "?")]
+        [TestCase("。", "。", ".")]
+        [TestCase("：", "：", ":")]
+        [TestCase("・", "・", "/")]
+        [TestCase("、", "、", ",")]
+        [TestCase("〜", "〜", "~")]
+        [TestCase("ー", "ー", "-")]
+        [TestCase("「", "「", "‘")]
+        [TestCase("」", "」", "’")]
+        [TestCase("『", "『", "“")]
+        [TestCase("』", "』", "”")]
+        [TestCase("［", "［", "[")]
+        [TestCase("］", "］", "]")]
+        [TestCase("（", "（", "(")]
+        [TestCase("）", "）", ")")]
+        [TestCase("｛", "｛", "{")]
+        [TestCase("｝", "｝", "}")]
+        public void ToRomaji_WhenPassedJapanesePunctuation_ConvertsItCorrectly(string inputHiragana, string inputKatakana, string expectedOutput)
+        {
+            string resultHiragana = WanaKana.ToRomaji(inputHiragana);
+            string resultKatakana = WanaKana.ToRomaji(inputKatakana);
+
+            Assert.AreEqual(resultHiragana, resultKatakana, expectedOutput);
+        }
+
+        [TestCase("いろはにほへと", "イロハニホヘト", "irohanihoheto")]
+        [TestCase("ちりぬるを", "チリヌルヲ", "chirinuruwo")]
+        [TestCase("わかよたれそ", "ワカヨタレソ", "wakayotareso")]
+        [TestCase("つねならむ", "ツネナラム", "tsunenaramu")]
+        [TestCase("うゐのおくやま", "ウヰノオクヤマ", "uwinookuyama")]
+        [TestCase("けふこえて", "ケフコエテ", "kefukoete")]
+        [TestCase("あさきゆめみし", "アサキユメミシ", "asakiyumemishi")]
+        [TestCase("ゑひもせすん", "ヱヒモセスン", "wehimosesun")]
+        public void ToRomaji_WhenPassedKana_ReturnsItConvertedToLatinCharacters(string inputHiragana, string inputKatakana, string expectedOutput)
+        {
+            string resultHiragana = WanaKana.ToRomaji(inputHiragana);
+            string resultKatakana = WanaKana.ToRomaji(inputKatakana);
+
+            Assert.AreEqual(resultHiragana, resultKatakana, expectedOutput);
+        }
+
         [TestCase("ひらがな　カタカナ", "hiragana katakana")]
         [TestCase("げーむ　ゲーム", "ge-mu geemu")]
         [TestCase("がっこうなかった", "gakkounakatta")]
