@@ -248,7 +248,8 @@ namespace WanaKanaSharp
                 options = new DefaultOptions();
             if (options.PassRomaji)
                 return Utils.HiraganaToKatakana(input, options);
-            else if (IsMixed(input) || IsRomaji(input))
+            else if (IsMixed(input) || IsRomaji(input)
+                || input.Any(chars => Char.IsPunctuation(chars)))
             {
                 string convertedHiragana = ToKana(input.ToLower(), options);
                 return Utils.HiraganaToKatakana(convertedHiragana, options);
