@@ -20,9 +20,11 @@
         public const string SokuonKatakana = "ッ";
         public const char ProlongedSoundMark = '\u30fc';
         public const char KanaSlashDot = '\u30fb';
+        public const int HiraKataSwitch = 0x60;
 
         readonly public static CharacterRange HiraganaChars = new CharacterRange('\u3040', '\u309f');
         readonly public static CharacterRange KatakanaChars = new CharacterRange('\u30a0', '\u30ff');
+        readonly public static CharacterRange HankakuKatakana = new CharacterRange('\uff66', '\uff9f');
         readonly public static CharacterRange KanjiChars = new CharacterRange('\u4e00', '\u9fa0');
         readonly public static CharacterRange ZenkakuNumbers = new CharacterRange('\uff10', '\uff19');
         readonly public static CharacterRange ZenkakuUppercaseChars = new CharacterRange('\uff21', '\uff3a');
@@ -68,6 +70,7 @@
         {
             HiraganaChars,
             KatakanaChars,
+            HankakuKatakana,
             KanjiChars,
             ZenkakuNumbers,
             ZenkakuUppercaseChars,
@@ -255,8 +258,7 @@
             ("(", "（"),
             (")", "）"),
             ("{", "｛"),
-            ("}", "｝"),
-            (" ", "　"),
+            ("}", "｝")
         };
 
         public static (string Romaji, string Kana)[] Consonants = new (string Romaji, string Kana)[]
