@@ -369,7 +369,7 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
-        [TestCase("toukyou, オオサカ", "とうきょう、　おおさか")]
+        [TestCase("toukyou, オオサカ", "とうきょう、 おおさか")]
         [TestCase("ラーメン", "らあめん")]
         public void ToHiragana_WhenPassedKatakanaAndRomaji_ReturnsThemConvertedToHiragana(string input, string expectedOutput)
         {
