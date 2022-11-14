@@ -50,13 +50,14 @@ namespace WanaKanaSharp.Internal
             {
                 char c = input[i];
                 bool isPreviousCharHiragana = i > 0 && WanaKana.IsHiragana(input[i - 1].ToString());
+                bool isCharInitialLongDash = i == 0;
                 if (c == Constants.Choonpu && !isPreviousCharHiragana
-                    && i != 0)
+                    && !isCharInitialLongDash)
                     result += ConvertChoonpu(result, i, false, options);
-                else if (WanaKana.IsKatakana(c.ToString()) 
+                else if (WanaKana.IsKatakana(c.ToString())
                     && c != Constants.Choonpu
                     && !Constants.KanaAsSymbol.Contains(c.ToString()))
-                        result += (char)(c - 0x60);
+                    result += (char)(c - Constants.HiraKataSwitch);
                 else
                     result += c;
             }
@@ -70,6 +71,7 @@ namespace WanaKanaSharp.Internal
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
+
                 if (WanaKana.IsHiragana(c.ToString()) && !isCharLongDash(c)
                     && !isCharSlashDot(c))
                     result += (char)(c + 0x60);
@@ -169,6 +171,12 @@ namespace WanaKanaSharp.Internal
                 else
                 {
                     temp += input[i - 1];
+                    //ignore standalone uppercase consonant chars for they are supposed to be converted to hiragana
+                    if (temp.Length == 1 && !Constants.EnglishVowels.Contains(temp))
+                    {
+                        temp = temp.ToLower();
+                        continue;
+                    }
                     inputArray.Add(temp);
                     temp = string.Empty;
                 }
