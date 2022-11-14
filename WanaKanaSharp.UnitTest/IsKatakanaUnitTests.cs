@@ -5,17 +5,11 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class IsKatakanaUnitTests
     {
-        [TestCase("A")]
-        public void IsKatakana_WhenPassedLatinCharacters_ReturnsFalse(string input)
-        {
-            var result = WanaKana.IsKatakana(input);
-
-            Assert.False(result);
-        }
 
         [TestCase("あ")]
+        [TestCase("A")]
         [TestCase("あア")]
-        public void IsKatakana_WhenPassedHiragana_ReturnsFalse(string input)
+        public void IsKatakana_WhenPassedNonKatakanaChars_ReturnsFalse(string input)
         {
             var result = WanaKana.IsKatakana(input);
 
@@ -23,6 +17,8 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("ゲーム")]
+        [TestCase("アア")]
+        [TestCase("ア")]
         public void IsKatakana_WhenPassedKatakana_ReturnsTrue(string input)
         {
             var result = WanaKana.IsKatakana(input);

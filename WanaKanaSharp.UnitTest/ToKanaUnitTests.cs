@@ -29,8 +29,8 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
-        [TestCase("onaji BUTTSUUJI", "おなじ　ブッツウジ")]
-        [TestCase("ONAJI buttsuuji", "オナジ　ぶっつうじ")]
+        [TestCase("onaji BUTTSUUJI", "おなじ ブッツウジ")]
+        [TestCase("ONAJI buttsuuji", "オナジ ぶっつうじ")]
         public void ToKana_WhenPassedLowerAndUpperCaseLatinChacters_ReturnsThemConvertedToHiraganaAndKatakanaRespectively(string input, string expectedOutput)
         {
             string result = WanaKana.ToKana(input);
@@ -38,7 +38,44 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
+        [TestCase("WaniKani", "わにかに")]
+        public void ToKana_WhenPassedMixedCaseWithStandaloneUppercaseChars_ReturnsThemConvertedToHiragana(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("kwi kuxi kuli kwe kuxe kule kwo kuxo kulo", "くぃ くぃ くぃ くぇ くぇ くぇ くぉ くぉ くぉ")]
+        public void ToKana_WhenPassedRyukyuan_ConvertsThemCorrectly(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("ワニカニ AiUeO 鰐蟹 12345 @#$%", "ワニカニ アいウえオ 鰐蟹 12345 @#$%")]
+        public void ToKana_WhenNonRomajiIsPassed_ReturnsItAsIs(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("n", "ん")]
+        [TestCase("shin", "しん")]
+        [TestCase("nn", "んん")]
+        public void ToKana_WhenPassedNConsonant_TransliteratesItCorrectly(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
         [TestCase("we", true, "ゑ")]
+        [TestCase("wi", true, "ゐ")]
+        [TestCase("WI", true, "ヰ")]
+        [TestCase("WE", true, "ヱ")]
         public void ToKana_WhenPassedObsoleteKanaFlagTrue_ReturnsObsoleteKanaString(string input, bool useObsoleteKana, string expectedOutput)
         {
             string result = WanaKana.ToKana(input, new DefaultOptions { UseObsoleteKana = useObsoleteKana });

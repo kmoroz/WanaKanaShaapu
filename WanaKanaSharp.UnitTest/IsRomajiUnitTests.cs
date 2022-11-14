@@ -14,6 +14,9 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("12a*b&c-d")]
+        [TestCase("A")]
+        [TestCase("xYz")]
+        [TestCase("0123456789")]
         public void IsRomaji_WhenPassedLatinCharactersPunctuationAndNumerals_ReturnsTrue(string input)
         {
             var result = WanaKana.IsRomaji(input);
@@ -30,7 +33,9 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("お願い")]
-        public void IsRomaji_WhenPassedNoLatinCharacters_ReturnsFalse(string input)
+        [TestCase("熟成")]
+        [TestCase("ｈｅｌｌｏ")]
+        public void IsRomaji_WhenPassedNonRomajiInput_ReturnsFalse(string input)
         {
             var result = WanaKana.IsRomaji(input);
 

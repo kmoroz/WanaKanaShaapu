@@ -5,24 +5,16 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class IsKanjiUnitTests
     {
-        [TestCase("勢い")]
-        public void IsKanji_WhenPassedHiragana_ReturnsFalse(string input)
-        {
-            var result = WanaKana.IsKanji(input);
-
-            Assert.False(result);
-        }
-
         [TestCase("あAア")]
-        public void IsKanji_WhenPassedLatinCharactersAndKana_ReturnsFalse(string input)
-        {
-            var result = WanaKana.IsKanji(input);
-
-            Assert.False(result);
-        }
-
+        [TestCase("勢い")]
         [TestCase("🐸")]
-        public void IsKanji_WhenPassedEmoji_ReturnsFalse(string input)
+        [TestCase("あ")]
+        [TestCase("ア")]
+        [TestCase("あア")]
+        [TestCase("１２隻")]
+        [TestCase("12隻")]
+        [TestCase("隻。")]
+        public void IsKanji_WhenPassedNonKanjiChars_ReturnsFalse(string input)
         {
             var result = WanaKana.IsKanji(input);
 

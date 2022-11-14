@@ -13,7 +13,9 @@ namespace WanaKanaSharp.UnitTests
             Assert.False(result);
         }
 
+
         [TestCase("あア")]
+        [TestCase("ア")]
         public void IsHiragana_WhenPassedKatakana_ReturnsFalse(string input)
         {
             var result = WanaKana.IsHiragana(input);
@@ -23,6 +25,8 @@ namespace WanaKanaSharp.UnitTests
 
         [TestCase("げーむ")]
         [TestCase("すげー")]
+        [TestCase("あ")]
+        [TestCase("ああ")]
         public void IsHiragana_WhenPassedHiragana_ReturnsTrue(string input)
         {
             var result = WanaKana.IsHiragana(input);

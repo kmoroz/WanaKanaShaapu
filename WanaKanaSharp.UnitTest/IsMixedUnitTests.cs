@@ -5,7 +5,9 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class IsMixedUnitTests
     {
-        [TestCase("Abあア")]
+        [TestCase("Aあア")]
+        [TestCase("Aア")]
+        [TestCase("Aあ")]
         public void IsMixed_WhenPassedRomajiAndKana_ReturnsTrue(string input)
         {
             var result = WanaKana.IsMixed(input);
@@ -22,7 +24,7 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("お腹A", false)]
-        public void IsMixed_WhenPassKanjiSetToFalse_ReturnsFalse(string input, bool passKanji)
+        public void IsMixed_WhenPassedKanjiAndKanjiSetToFalse_ReturnsFalse(string input, bool passKanji)
         {
             var result = WanaKana.IsMixed(input, passKanji);
 
@@ -38,7 +40,13 @@ namespace WanaKanaSharp.UnitTests
         }
 
         [TestCase("あア")]
-        public void IsMixed_WhenPassedKana_ReturnsFalse(string input)
+        [TestCase("２あア")]
+        [TestCase("お腹")]
+        [TestCase("腹")]
+        [TestCase("A")]
+        [TestCase("あ")]
+        [TestCase("ア")]
+        public void IsMixed_WhenPassedJapaneseNotMixedWithLatinChars_ReturnsFalse(string input)
         {
             var result = WanaKana.IsMixed(input);
 
