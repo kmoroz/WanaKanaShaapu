@@ -198,5 +198,30 @@ namespace WanaKanaSharp.Internal
                 return true;
             return false;
         }
+
+        internal static string OkuriganaToStrip(string input, [Optional] bool leading)
+        {
+            string result = string.Empty;
+
+            if (leading)
+            {
+                foreach(char c in input)
+                {
+                    if (!WanaKana.IsKanji(c.ToString()))
+                        result += c;
+                    else
+                        return "^" + result;
+                }
+            }
+            for (int i = input.Length - 1; i >= 0; i--)
+            {
+                char c = input[i];
+                if (!WanaKana.IsKanji(c.ToString()))
+                    result += c;
+                else
+                    return result + "$";
+            }
+            return result;
+        }
     }
 }
