@@ -161,22 +161,23 @@ namespace WanaKanaSharp
         /// <returns>The input stripped from okurigana.</returns>
         public static string StripOkurigana(string input, [Optional] bool leading, [Optional] string matchKanji)
         {
-            bool isLeadingWithoutInitialKana = leading && !IsKana(input.First().ToString());
-            bool isTrailingWithoutFinalKana = !leading && !IsKana(input.Last().ToString());
-            bool isInvalidMatcher = (!String.IsNullOrEmpty(matchKanji) && !matchKanji.Any(chars => IsKanji(chars.ToString()))) 
-                                    || (String.IsNullOrEmpty(matchKanji) && IsKana(input));
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            bool isLeadingWithoutInitialKana = !IsKana(input.First().ToString()) && leading;
+            bool isTrailingWithoutFinalKana = !IsKana(input.Last().ToString()) && !leading;
+            bool isInvalidMatcher = (!string.IsNullOrEmpty(matchKanji) 
+                && !matchKanji.Any(chars => IsKanji(chars.ToString()))) 
+                || (string.IsNullOrEmpty(matchKanji) && IsKana(input));
 
             if (!IsJapanese(input) || isLeadingWithoutInitialKana
-                || isTrailingWithoutFinalKana || isInvalidMatcher)
+                || isTrailingWithoutFinalKana
+                || isInvalidMatcher)
                 return input;
 
-            string okuriganaRegex = string.Empty;
-            string chars = input;
-
-            if (leading)
-                okuriganaRegex = chars.First().ToString();
-            else
-                okuriganaRegex = chars.Last().ToString();
+            string okuriganaRegex = !string.IsNullOrEmpty(matchKanji) 
+                ? Utils.OkuriganaToStrip(matchKanji, leading)
+                : Utils.OkuriganaToStrip(input, leading);
 
             return Regex.Replace(input, okuriganaRegex, string.Empty);
         }
