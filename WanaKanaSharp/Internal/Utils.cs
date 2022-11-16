@@ -27,22 +27,25 @@ namespace WanaKanaSharp.Internal
             return false;
         }
 
-        internal static string ConvertChoonpu(string input, int i, bool isDestinationRomaji, [Optional] DefaultOptions options)
+        internal static string ConvertChoonpu(string input, int i, [Optional] DefaultOptions options, bool isDestinationRomaji)
         {
-            if (!options.ConvertLongVowelMark)
+            string beforeChoonpu = input[i - 1].ToString();
+            if (!options.ConvertLongVowelMark 
+                || WanaKana.IsRomaji(beforeChoonpu)
+                || WanaKana.IsKanji(beforeChoonpu))
                 return "ー";
             else
             {
-                var syllable = Constants.KanaToHepburnTree[input[i - 1].ToString()].Data;
+                var syllable = Constants.KanaToHepburnTree[beforeChoonpu].Data;
                 var longVowel = syllable.Last().ToString();
                 var longVowelConverted = Constants.RomajiToKanaTree[longVowel].Data;
                 if (!isDestinationRomaji)
-                    return longVowelConverted;
+                    return longVowelConverted == "お" ? "う" : longVowelConverted;
                 return longVowel;
             }
         }
 
-        internal static string KatakanaToHiragana(string input, [Optional] DefaultOptions options)
+        internal static string KatakanaToHiragana(string input, [Optional] DefaultOptions options, [Optional] bool isDestinationRomaji)
         {
             string result = string.Empty;
 
@@ -53,7 +56,7 @@ namespace WanaKanaSharp.Internal
                 bool isCharInitialLongDash = i == 0;
                 if (c == Constants.Choonpu && !isPreviousCharHiragana
                     && !isCharInitialLongDash)
-                    result += ConvertChoonpu(result, i, false, options);
+                    result += ConvertChoonpu(result, i, options, isDestinationRomaji);
                 else if (WanaKana.IsKatakana(c.ToString())
                     && c != Constants.Choonpu
                     && !Constants.KanaAsSymbol.Contains(c.ToString()))
@@ -92,11 +95,13 @@ namespace WanaKanaSharp.Internal
                 return "other";
         }
 
-        internal static string GetTokenType(char c, bool compact)
+        internal static string GetTokenType(char c, string previousType, bool compact)
         {
             string letter = c.ToString();
             if (compact)
                 return GetTokenTypeCompact(c);
+            if (c == Constants.Choonpu)
+                return previousType == "katakana" ? "katakana" : "hiragana";
             if (WanaKana.IsKanji(letter))
                 return "kanji";
             else if (WanaKana.IsHiragana(letter))
@@ -119,19 +124,6 @@ namespace WanaKanaSharp.Internal
                 return "englishPunctuation";
             else
                 return "other";
-        }
-
-        internal static string ResolveSokuon(string input)
-        {
-            for (int i = 0; i < input.Length; i++)
-            {
-                char letter = input[i];
-                if (IsSokuon(letter.ToString()) && i + 1 < input.Length)
-                {
-                    input = input.Substring(0, i) + input[i + 1] + input.Substring(i + 1);
-                }
-            }
-            return input;
         }
 
         internal static Dictionary<string, Node> AddObsoleteKana()
