@@ -5,9 +5,20 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class ToKanaUnitTests
     {
+        [TestCase("", "")]
+        public void ToKana_WhenPassedAnEmptyString_ReturnsAnEmptyString(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
         [TestCase("座禅‘zazen’スタイル", "座禅「ざぜん」スタイル")]
         [TestCase("batsuge-mu", "ばつげーむ")]
-        [TestCase("!?.:/,~-‘’“”[](){}", "！？。：・、〜ー「」『』［］（）｛｝")]
+        [TestCase("chya", "ちゃ")]
+        [TestCase("chyx", "chyx")]
+        [TestCase("shyp", "shyp")]
+        [TestCase("ltsb", "ltsb")]
         public void ToKana_WhenPassedInput_ConvertsItCorrectly(string input, string expectedOutput)
         {
             string result = WanaKana.ToKana(input);
@@ -65,6 +76,21 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("n", "ん")]
         [TestCase("shin", "しん")]
         [TestCase("nn", "んん")]
+        [TestCase("onn", "おんん")]
+        [TestCase("onna", "おんな")]
+        [TestCase("nnn", "んんん")]
+        [TestCase("onnna", "おんんな")]
+        [TestCase("nnnn", "んんんん")]
+        [TestCase("nyan", "にゃん")]
+        [TestCase("nnyann", "んにゃんん")]
+        [TestCase("nnnyannn", "んんにゃんんん")]
+        [TestCase("n'ya", "んや")]
+        [TestCase("kin'ya", "きんや")]
+        [TestCase("shin'ya", "しんや")]
+        [TestCase("kinyou", "きにょう")]
+        [TestCase("kin'you", "きんよう")]
+        [TestCase("kin'yu", "きんゆ")]
+        [TestCase("ichiban warui", "いちばん わるい")]
         public void ToKana_WhenPassedNConsonant_TransliteratesItCorrectly(string input, string expectedOutput)
         {
             string result = WanaKana.ToKana(input);

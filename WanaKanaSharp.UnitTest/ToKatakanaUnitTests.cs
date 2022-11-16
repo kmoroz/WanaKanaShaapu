@@ -5,6 +5,14 @@ namespace WanaKanaSharp.UnitTests
     [TestFixture]
     public class ToKatakanaUnitTests
     {
+        [TestCase("", "")]
+        public void ToKatakana_WhenPassedAnEmptyString_ReturnsAnEmptyString(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKatakana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
         [TestCase("a", "ア")]
         [TestCase("i", "イ")]
         [TestCase("u", "ウ")]
@@ -322,6 +330,8 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("wawwa", "ワッワ")]
         [TestCase("yayya", "ヤッヤ")]
         [TestCase("zazza", "ザッザ")]
+        //
+        [TestCase("NLTU", "ンッ")]
 
         public void ToKatakana_WhenPassedRomaji_ReturnsItConvertedToKatakana(string input, string expectedOutput)
         {
@@ -378,7 +388,29 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
+        [TestCase("スタイル", "スタイル")]
+        [TestCase("アメリカじん", "アメリカジン")]
+        public void ToKatakana_WhenPassedKana_ConvertsItCorrectly(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKatakana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
+        [TestCase("ばつゲーム", "バツゲーム")]
+        [TestCase("バツゲーム", "バツゲーム")]
+        [TestCase("テスーと", "テスート")]
+        public void ToKatakana_WhenPassedALongVowelMark_ConvertsItCorrectly(string input, string expectedOutput)
+        {
+            string result = WanaKana.ToKatakana(input);
+
+            Assert.AreEqual(result, expectedOutput);
+        }
+
         [TestCase("only かな", true, "only カナ")]
+        [TestCase("only かな", false, "オンly カナ")]
+        [TestCase("座禅‘zazen’すたいる", true, "座禅‘zazen’スタイル")]
+        [TestCase("座禅‘zazen’すたいる", false, "座禅「ザゼン」スタイル")]
         public void ToKatakana_WhenPassRomajiFlagIsEngabled_OnlyConvertsHiragana(string input, bool passRomaji, string expectedOutput)
         {
             string result = WanaKana.ToKatakana(input, new DefaultOptions { PassRomaji = passRomaji });
@@ -386,8 +418,27 @@ namespace WanaKanaSharp.UnitTests
             Assert.AreEqual(result, expectedOutput);
         }
 
+        [TestCase("aiueo", "AIUEO")]
+        public void ToKatakana_WhenPassedLowerAndUpperCaseRomaji_ConvertsItTheSameWay(string lowercase, string uppercase)
+        {
+            string lowercaseResult = WanaKana.ToKatakana(lowercase);
+            string uppercaseResult = WanaKana.ToKatakana(uppercase);
+
+            Assert.AreEqual(lowercaseResult, uppercaseResult);
+        }
+
         [TestCase("wi", true, "ヰ")]
-        public void ToKatakana_WhenPassUseObsoleteKanaFlag_ReturnsObsoleteKana(string input, bool useObsoleteKana, string expectedOutput)
+        [TestCase("we", true, "ヱ")]
+        [TestCase("wi", false, "ウィ")]
+        [TestCase("IROHANIHOHETO", true, "イロハニホヘト")]
+        [TestCase("CHIRINURUWO", true, "チリヌルヲ")]
+        [TestCase("WAKAYOTARESO", true, "ワカヨタレソ")]
+        [TestCase("TSUNENARAMU", true, "ツネナラム")]
+        [TestCase("UWINOOKUYAMA", true, "ウヰノオクヤマ")]
+        [TestCase("KEFUKOETE", true, "ケフコエテ")]
+        [TestCase("ASAKIYUMEMISHI", true, "アサキユメミシ")]
+        [TestCase("WEHIMOSESU", true, "ヱヒモセス")]
+        public void ToKatakana_WhenObsoleteKanaFlagIsTrue_ConvertsObsoleteKanaCorrectly(string input, bool useObsoleteKana, string expectedOutput)
         {
             string result = WanaKana.ToKatakana(input, new DefaultOptions { UseObsoleteKana = useObsoleteKana });
 
