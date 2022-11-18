@@ -330,7 +330,7 @@ namespace WanaKanaSharp.UnitTests
         [TestCase("wawwa", "わっわ")]
         [TestCase("yayya", "やっや")]
         [TestCase("zazza", "ざっざ")]
-        //
+        // other
         [TestCase("NLTU", "んっ")]
 
         public void ToHiragana_WhenPassedRomaji_ConvertsItToHiraganaCorrectly(string input, string expectedOutput)
