@@ -36,9 +36,9 @@ namespace WanaKanaSharp.Internal
                 return "ー";
             else
             {
-                var syllable = Constants.KanaToHepburnTree[beforeChoonpu].Data;
+                var syllable = TreeConstants.KanaToHepburnTree[beforeChoonpu].Data;
                 var longVowel = syllable.Last().ToString();
-                var longVowelConverted = Constants.RomajiToKanaTree[longVowel].Data;
+                var longVowelConverted = TreeConstants.RomajiToKanaTree[longVowel].Data;
                 if (!isDestinationRomaji)
                     return longVowelConverted == "お" ? "う" : longVowelConverted;
                 return longVowel;

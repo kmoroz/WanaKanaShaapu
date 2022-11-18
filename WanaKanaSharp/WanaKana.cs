@@ -214,7 +214,7 @@ namespace WanaKanaSharp
         public static string ToKana(string input, [Optional] DefaultOptions options)
         {
             string convertedString = string.Empty;
-            var tree = Constants.RomajiToKanaTree;
+            var tree = TreeConstants.RomajiToKanaTree;
             if (options is null)
                 options = new DefaultOptions();
             if (options.CustomKanaMapping.Count != 0)
@@ -305,12 +305,14 @@ namespace WanaKanaSharp
         /// <returns>The string converted to romaji.</returns>
         public static string ToRomaji(string kana, [Optional] DefaultOptions options)
         {
+            if (options is null)
+                options = new DefaultOptions();
+            if (options.Romanization != "hepburn")
+                return kana;
             string result = string.Empty;
             string convertedString = string.Empty;
             bool katakanaToUpper = options != null && options.UpcaseKatakana;
-            var tree = Constants.KanaToHepburnTree;
-            if (options is null)
-                options = new DefaultOptions();
+            var tree = TreeConstants.KanaToHepburnTree;
             if (katakanaToUpper)
             {
                 Tokenization kanaTokens = Tokenize(kana);
