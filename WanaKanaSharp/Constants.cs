@@ -381,8 +381,5 @@
             ("wi", "ゐ"),
             ("we", "ゑ"),
         };
-
-        readonly public static Dictionary<string, Node> KanaToHepburnTree = TreeBuilder.BuildKanaToHepburnTree();
-        readonly public static Dictionary<string, Node> RomajiToKanaTree = TreeBuilder.BuildRomajiToKanaTree();
     }
 }
