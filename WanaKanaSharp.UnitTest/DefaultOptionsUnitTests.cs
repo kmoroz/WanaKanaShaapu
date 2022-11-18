@@ -6,7 +6,7 @@ namespace WanaKanaSharp.UnitTests
     public class DefaultOptionsUnitTests
     {
         [Test]
-        public void DefaultOptions_WhenPartiallyInstantiated_PropertiesHaveDefaultValues()
+        public void DefaultOptions_WhenInstatiatedWithEmptyConstructor_PropertiesHaveDefaultValues()
         {
             DefaultOptions myOptions = new DefaultOptions();
 
