@@ -214,7 +214,6 @@
             { 'z', "z" }
         };
 
-         //{"a", "あ" }, {"i", "い" }, {"u", "う" }, {"e", "え" }, {"o", "お" },
         public static Dictionary<string, (string Romaji, string Kana)[]> BasicKunrei = new ()
         {
             { "a", new (string Romaji, string Kana)[] { ("", "あ") } },

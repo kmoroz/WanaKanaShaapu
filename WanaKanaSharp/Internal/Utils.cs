@@ -120,7 +120,7 @@ namespace WanaKanaSharp.Internal
                 return "en";
             else if (Char.IsDigit(c) && Char.IsAscii(c))
                 return "englishNumeral";
-            else if (Char.IsPunctuation(c)) //|| Constants.WhitespacePunctuationDictionary.ContainsKey(letter))
+            else if (Char.IsPunctuation(c))
                 return "englishPunctuation";
             else
                 return "other";
