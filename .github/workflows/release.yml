@@ -20,4 +20,4 @@ jobs:
       run: dotnet pack ./**/WanaKanaShaapu.csproj -c Release /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See release notes at https://github.com/kmoroz/WanaKanaShaapu/releases/tag/${{ github.event.release.tag_name }}"
       
     - name: Publish
-      run: dotnet nuget push */**/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://int.nugettest.org
+      run: dotnet nuget push */**/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
