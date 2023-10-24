@@ -25,19 +25,19 @@ namespace WanaKanaShaapu
 
         private static void AddNode(Node node, string romaji, string kana)
         {
-            if (romaji.Length == 1 && !node.Children.ContainsKey(romaji))
+            if (romaji.Length == 0)
+                return;
+            else if (romaji.Length == 1 && !node.Children.ContainsKey(romaji))
                 node.Children.Add(romaji, new Node(kana));
             else if (romaji.Length == 1 && node.Children.ContainsKey(romaji))
                 node.Children[romaji].Data = kana;
             else
             {
-                foreach (char c in romaji)
-                {
-                    if (!node.Children.ContainsKey(c.ToString()))
-                        node.Children.Add(c.ToString(), new Node(string.Empty));
-                    node = node.Children[c.ToString()];
-                    AddNode(node, romaji[1..], kana);
-                }
+                var firstChar = romaji.First().ToString();
+                if (!node.Children.ContainsKey(firstChar))
+                    node.Children.Add(firstChar.First().ToString(), new Node(string.Empty));
+                node = node.Children[firstChar.ToString()];
+                AddNode(node, romaji[1..], kana);
             }
         }
 
