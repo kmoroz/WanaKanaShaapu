@@ -19,6 +19,7 @@ namespace WanaKanaShaapu.UnitTests
         [TestCase("chyx", "chyx")]
         [TestCase("shyp", "shyp")]
         [TestCase("ltsb", "ltsb")]
+        [TestCase("chuu", "ちゅう")]
         public void ToKana_WhenPassedInput_ConvertsItCorrectly(string input, string expectedOutput)
         {
             string result = WanaKana.ToKana(input);
