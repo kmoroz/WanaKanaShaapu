@@ -10,7 +10,7 @@ namespace WanaKanaShaapu
     public class Node
     {
         public string Data { get; set; } = string.Empty;
-        public Dictionary<string, Node> Children { get; set; } = new();
+        public Dictionary<string, Node> Children { get; set; } = new Dictionary<string, Node>();
 
         public Node FindChild(string key)
         {

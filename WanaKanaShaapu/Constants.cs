@@ -1,4 +1,6 @@
-﻿namespace WanaKanaShaapu
+﻿using System.Collections.Generic;
+
+namespace WanaKanaShaapu
 {
     public static class Constants
     {
@@ -53,11 +55,11 @@
 
         readonly public static CharacterRange[] MacronCharacterRanges = new CharacterRange[]
         {
-            new('\u0100', '\u0101'),
-            new('\u0112', '\u0113'),
-            new('\u012a', '\u012b'),
-            new('\u014C', '\u014D'),    
-            new('\u016A', '\u016B')
+            new CharacterRange('\u0100', '\u0101'),
+            new CharacterRange('\u0112', '\u0113'),
+            new CharacterRange('\u012a', '\u012b'),
+            new CharacterRange('\u014C', '\u014D'),    
+            new CharacterRange('\u016A', '\u016B')
         };
 
         readonly public static CharacterRange[] KanaCharacterRanges = new CharacterRange[]
@@ -192,7 +194,7 @@
             "ヵ"
         };
 
-        public static Dictionary<char, string> SokuonWhitelist = new()
+        public static Dictionary<char, string> SokuonWhitelist = new Dictionary<char, string>()
         {
             { 'b', "b" },
             { 'c', "t" },
@@ -214,7 +216,7 @@
             { 'z', "z" }
         };
 
-        public static Dictionary<string, (string Romaji, string Kana)[]> BasicKunrei = new ()
+        public static Dictionary<string, (string Romaji, string Kana)[]> BasicKunrei = new Dictionary<string, (string Romaji, string Kana)[]>()
         {
             { "a", new (string Romaji, string Kana)[] { ("", "あ") } },
             { "i", new (string Romaji, string Kana)[] { ("", "い") } },

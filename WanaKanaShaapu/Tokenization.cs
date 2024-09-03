@@ -1,4 +1,6 @@
-﻿using WanaKanaShaapu;
+﻿using System.Collections.Generic;
+using System.Linq;
+using WanaKanaShaapu;
 
 namespace WanaKanaShaapu
 {
