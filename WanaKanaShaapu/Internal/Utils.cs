@@ -1,9 +1,16 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace WanaKanaShaapu.Internal
 {
     internal static class Utils
     {
+        internal static bool IsAscii(char c)
+        {
+            return c >= 0 && c <= 127;
+        }
         internal static bool IsMacron(char c)
         {
             foreach (var range in Constants.MacronCharacterRanges)
@@ -89,7 +96,7 @@ namespace WanaKanaShaapu.Internal
             string letter = c.ToString();
             if (WanaKana.IsJapanese(letter) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
                 return "ja";
-            else if (Char.IsAscii(c) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
+            else if (IsAscii(c) && (Char.IsLetter(c) || Char.IsWhiteSpace(c)))
                 return "en";
             else
                 return "other";
@@ -116,9 +123,9 @@ namespace WanaKanaShaapu.Internal
                 return "japanesePunctuation";
             else if (WanaKana.IsJapanese(letter))
                 return "ja";
-            else if (Char.IsAscii(c) && Char.IsLetter(c))
+            else if (IsAscii(c) && Char.IsLetter(c))
                 return "en";
-            else if (Char.IsDigit(c) && Char.IsAscii(c))
+            else if (Char.IsDigit(c) && IsAscii(c))
                 return "englishNumeral";
             else if (Char.IsPunctuation(c))
                 return "englishPunctuation";

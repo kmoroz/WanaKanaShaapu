@@ -1,4 +1,6 @@
-﻿namespace WanaKanaShaapu
+﻿using System.Collections.Generic;
+
+namespace WanaKanaShaapu
 {
     public static class TreeConstants
     {

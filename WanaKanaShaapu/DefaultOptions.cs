@@ -1,4 +1,6 @@
-﻿namespace WanaKanaShaapu
+﻿using System.Collections.Generic;
+
+namespace WanaKanaShaapu
 {
     public class DefaultOptions
     {
@@ -8,7 +10,7 @@
         public bool UpcaseKatakana { get; set; }
         public dynamic IMEMode { get; set; }
         public string Romanization { get; set; } = "hepburn";
-        public Dictionary<string, string> CustomKanaMapping = new();
-        public Dictionary<string, string> CustomRomajiMapping = new();
+        public Dictionary<string, string> CustomKanaMapping = new Dictionary<string, string>();
+        public Dictionary<string, string> CustomRomajiMapping = new Dictionary<string, string>();
     }
 }
