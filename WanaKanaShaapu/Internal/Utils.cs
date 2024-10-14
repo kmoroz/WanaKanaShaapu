@@ -145,12 +145,13 @@ namespace WanaKanaShaapu.Internal
         {
             var treeCopy = TreeBuilder.BuildRomajiToKanaTree();
             foreach (var pair in options.CustomKanaMapping)
-                ChangeNodeData(treeCopy, pair.Key, pair.Value);
+                ChangeNodeData(treeCopy, pair.Key.ToLower(), pair.Value);
             return treeCopy;
         }
 
         internal static void ChangeNodeData(Dictionary<string, Node> tree, string key, string value)
         {
+
             Node node = tree[key.First().ToString()];
             if (key.Length == 1 || !node.Children.Any())
                 node.Data = value;
