@@ -229,7 +229,7 @@ namespace WanaKanaShaapu
                 var slicedInput = Utils.SliceInput(input);
                 foreach(string slice in slicedInput)
                 {
-                    if (slice.Any(char.IsUpper))
+                    if (slice.Any(char.IsUpper) && !options.CustomKanaMapping.Any(k => slice.Contains(k.Key)))
                         convertedString += ToKatakana(TreeTraverser.TraverseTree(convertedString, slice.ToLower(), tree, tree, options));
                     else
                         convertedString += TreeTraverser.TraverseTree(convertedString, slice, tree, tree, options);

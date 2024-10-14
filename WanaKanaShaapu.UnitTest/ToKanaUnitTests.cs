@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using WanaKanaShaapu;
 
 namespace WanaKanaShaapu.UnitTests
 {
@@ -111,9 +112,12 @@ namespace WanaKanaShaapu.UnitTests
         }
 
         [TestCase("wanakana", "わにBanaに")]
+        [TestCase("GG", "GG")]
+        [TestCase(" GG ", " GG ")]
+        [TestCase("TT", "TT")]
         public void ToKana_WhenPassedCustomMapping_ReturnsACorrectString(string input, string expectedOutput)
         {
-            string result = WanaKana.ToKana(input, new DefaultOptions { CustomKanaMapping = new Dictionary<string, string> { { "na", "に" }, { "ka", "Bana" } } });
+            string result = WanaKana.ToKana(input, new DefaultOptions { CustomKanaMapping = new Dictionary<string, string> { { "na", "に" }, { "ka", "Bana" }, { "GG", "GG" }, { "TT", "TT" } } });
 
             Assert.AreEqual(result, expectedOutput);
         }

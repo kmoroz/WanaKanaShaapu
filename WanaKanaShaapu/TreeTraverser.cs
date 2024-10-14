@@ -24,7 +24,7 @@ namespace WanaKanaShaapu
             
             if (word.Length == 1)
                 return node.Data.Length == 0 && WanaKana.IsRomaji(word) 
-                    ? word : node.Data;
+                    ? result += word : node.Data;
 
             if (WanaKana.IsHiragana(word.First().ToString()))
                 result = node.Data;
