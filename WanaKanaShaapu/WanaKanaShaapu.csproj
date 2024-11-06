@@ -12,6 +12,7 @@
     <RepositoryUrl>https://github.com/kmoroz/WanaKanaShaapu</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>japanese wanikani wanakana tofugu hiragana katakana romaji kanji transliteration</PackageTags>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
